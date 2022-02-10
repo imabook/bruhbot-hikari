@@ -11,9 +11,17 @@ intents = (Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_BANS
            | Intents.GUILD_EMOJIS | Intents.ALL_MESSAGES
            | Intents.GUILD_MESSAGE_REACTIONS | Intents.ALL_MESSAGE_TYPING)
 
+
+def prefix(app: lightbulb.BotApp, message: hikari.Message):
+    if message.author.id == 424213584659218445:
+        return ["", "test "]
+    else:
+        return "test"
+
+
 bot = lightbulb.BotApp(token=os.environ["TEST_TOKEN"],
                        intents=intents,
-                       prefix="test ",
+                       prefix=prefix,
                        owner_ids=[424213584659218445, 436521909144911874])
 
 [
@@ -26,7 +34,7 @@ bot = lightbulb.BotApp(token=os.environ["TEST_TOKEN"],
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.option("plugin", "Plugin para cargar")
 @lightbulb.command("load", "Carga el plugin especificado", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def load(ctx):
     if not ctx.options.plugin:
         return await ctx.respond("pero dime que plugin cargar no?")
@@ -42,7 +50,7 @@ async def load(ctx):
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.option("plugin", "Plugin para cargar")
 @lightbulb.command("unload", "Elimina el plugin especificado", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def unload(ctx):
     if not ctx.options.plugin:
         return await ctx.respond("pero dime que plugin eliminar no?")
@@ -57,7 +65,7 @@ async def unload(ctx):
 @bot.command
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("reload", "Recarga todos los plugins", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def reload(ctx: lightbulb.Context):
     try:
         [
@@ -69,11 +77,11 @@ async def reload(ctx: lightbulb.Context):
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{(e)}\n```")
 
 
-# @bot.listen(event_type=hikari.StoppingEvent)
-# async def on_disconnect(event: hikari.StoppingEvent):
-#     # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
-#     channel = await bot.rest.fetch_channel(720392697793216642)
-#     await channel.send("RIP <@424213584659218445>", user_mentions=True)
+@bot.listen(event_type=hikari.StoppingEvent)
+async def on_disconnect(event: hikari.StoppingEvent):
+    # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
+    channel = await bot.rest.fetch_channel(720392697793216642)
+    await channel.send("RIP <@424213584659218445>", user_mentions=False)
 
 
 @bot.listen(lightbulb.CommandErrorEvent)
