@@ -10,7 +10,9 @@ plugin = lightbulb.Plugin("ImagePlugin")
 
 async def _thisxdoesnotparse(ctx: lightbulb.Context, url: str, body: str):
     async with ctx.app.rest.trigger_typing(ctx.get_channel()):
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
+                ssl=False)) as session:
+            # asi no andan jodiendo los certificates (creo xd^^)
             async with session.get(
                     url, headers={'User-Agent-Forntite-Not-Goty': 'A'}) as r:
 
