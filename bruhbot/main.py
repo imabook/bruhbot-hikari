@@ -13,7 +13,9 @@ intents = (Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_BANS
 
 
 def prefix(app: lightbulb.BotApp, message: hikari.Message):
-    if message.author.id == 424213584659218445:
+    if message.author.id in [
+            424213584659218445, 436521909144911874, 506565592757698600
+    ]:
         return ["", "test "]
     else:
         return "test"
@@ -22,7 +24,8 @@ def prefix(app: lightbulb.BotApp, message: hikari.Message):
 bot = lightbulb.BotApp(token=os.environ["TEST_TOKEN"],
                        intents=intents,
                        prefix=prefix,
-                       owner_ids=[424213584659218445, 436521909144911874])
+                       owner_ids=[424213584659218445, 436521909144911874],
+                       case_insensitive_prefix_commands=True)
 
 [
     bot.load_extensions(f"extensions.{i[:-3]}")
@@ -97,6 +100,15 @@ async def on_error(event: lightbulb.CommandErrorEvent):
             f"Ehh esperate unos `{exception.retry_after:.2f}` segundos, vale?")
     elif isinstance(event.exception, lightbulb.CommandNotFound):
         return
+    elif isinstance(event.exception, lightbulb.NotEnoughArguments):
+
+        formatted_args = "\n".join([
+            f'{e.name} :: {e.description}' for e in exception.missing_options
+        ])
+
+        return await event.context.respond(
+            f"espera te faltan argumentos 🗣️ xd\n>>> ```asciidoc\n{formatted_args}```",
+            delete_after=15)
     # elif isinstance(event.exception, lightbulb.CommandInvocationError):
     #     return
 

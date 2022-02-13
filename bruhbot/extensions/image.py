@@ -1,6 +1,8 @@
 import hikari
 import lightbulb
 
+from core.embed import BetterEmbed
+
 import random
 import aiohttp
 import io
@@ -8,7 +10,7 @@ import io
 plugin = lightbulb.Plugin("ImagePlugin")
 
 
-async def _thisxdoesnotparse(ctx: lightbulb.Context, url: str, body: str):
+async def _fetch(ctx: lightbulb.Context, url: str):
     async with ctx.app.rest.trigger_typing(ctx.get_channel()):
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
                 ssl=False)) as session:
@@ -16,8 +18,7 @@ async def _thisxdoesnotparse(ctx: lightbulb.Context, url: str, body: str):
             async with session.get(
                     url, headers={'User-Agent-Forntite-Not-Goty': 'A'}) as r:
 
-                return await ctx.respond(body,
-                                         attachment=io.BytesIO(await r.read()))
+                return io.BytesIO(await r.read())
 
 
 @plugin.command
@@ -25,8 +26,8 @@ async def _thisxdoesnotparse(ctx: lightbulb.Context, url: str, body: str):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def persona(ctx: lightbulb.Context):
 
-    await _thisxdoesnotparse(ctx, "https://thispersondoesnotexist.com/image",
-                             "aqui tienes una persona NO real")
+    img = await _fetch(ctx, "https://thispersondoesnotexist.com/image")
+    await ctx.respond("aqui tienes una persona NO real", attachment=img)
 
     # if isinstance(ctx.command, lightbulb.commands.SlashCommand):
     #     await response.edit(attachment=io.BytesIO(await r.read()))
@@ -41,8 +42,8 @@ async def persona(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def gato(ctx: lightbulb.Context):
 
-    await _thisxdoesnotparse(ctx, "https://thiscatdoesnotexist.com",
-                             "aqui tienes un gato NO real")
+    img = await _fetch(ctx, "https://thiscatdoesnotexist.com")
+    await ctx.respond("aqui tienes un gato NO real", attachment=img)
 
 
 @plugin.command
@@ -50,8 +51,8 @@ async def gato(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def cuadro(ctx: lightbulb.Context):
 
-    await _thisxdoesnotparse(ctx, "https://thisartworkdoesnotexist.com/",
-                             "aqui tienes un cuadro NO real")
+    img = await _fetch(ctx, "https://thisartworkdoesnotexist.com")
+    await ctx.respond("aqui tienes un cuadro NO real", attachment=img)
 
 
 @plugin.command
@@ -59,9 +60,7 @@ async def cuadro(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def waifu(ctx: lightbulb.Context):
 
-    embed = hikari.Embed(
-        title="Aqui tienes una waifu 😳 NO real", color=hikari.Color(0x2f3136)
-    ).set_image(
+    embed = BetterEmbed(title="aqui tienes una waifu 😳 NO real").set_image(
         f"https://www.thiswaifudoesnotexist.net/example-{random.randint(0, 100000)}.jpg"
     )
 
@@ -116,7 +115,7 @@ async def color(ctx: lightbulb.Context):
         ) as r:
             js = await r.json()
 
-    embed = hikari.Embed(
+    embed = BetterEmbed(
         color=color_hex,
         title=f"{js['name']['value']}",
         description=
@@ -125,6 +124,25 @@ async def color(ctx: lightbulb.Context):
         f"http://singlecolorimage.com/get/{color_hex}/300x120").set_thumbnail(
             f"http://singlecolorimage.com/get/{color_hex}/100x100").set_footer(
                 "Para más info puedes ir a https://htmlcolorcodes.com/ 😎")
+
+    await ctx.respond(embed=embed)
+
+
+@plugin.command
+@lightbulb.option("texto",
+                  "El texto que quieres que se convierta en QR",
+                  modifier=lightbulb.commands.OptionModifier.CONSUME_REST,
+                  required=True)
+@lightbulb.command("qr", "Crea un QR con el texto que tu quieras")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def qr(ctx: lightbulb.Context):
+    img = await _fetch(
+        ctx,
+        f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={ctx.options.texto.replace(' ', '+')}"
+    )
+    embed = BetterEmbed(
+        title="aqui tienes tu qr supongo",
+        description=f"su contenido es `{ctx.options.texto}` 👍").set_image(img)
 
     await ctx.respond(embed=embed)
 
