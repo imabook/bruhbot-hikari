@@ -26,7 +26,7 @@ async def _thisxdoesnotparse(ctx: lightbulb.Context, url: str, body: str):
 async def persona(ctx: lightbulb.Context):
 
     await _thisxdoesnotparse(ctx, "https://thispersondoesnotexist.com/image",
-                             "Aqui tienes una persona NO real")
+                             "aqui tienes una persona NO real")
 
     # if isinstance(ctx.command, lightbulb.commands.SlashCommand):
     #     await response.edit(attachment=io.BytesIO(await r.read()))
@@ -42,7 +42,7 @@ async def persona(ctx: lightbulb.Context):
 async def gato(ctx: lightbulb.Context):
 
     await _thisxdoesnotparse(ctx, "https://thiscatdoesnotexist.com",
-                             "Aqui tienes un gato NO real")
+                             "aqui tienes un gato NO real")
 
 
 @plugin.command
@@ -51,7 +51,7 @@ async def gato(ctx: lightbulb.Context):
 async def cuadro(ctx: lightbulb.Context):
 
     await _thisxdoesnotparse(ctx, "https://thisartworkdoesnotexist.com/",
-                             "Aqui tienes un cuadro NO real")
+                             "aqui tienes un cuadro NO real")
 
 
 @plugin.command
@@ -64,6 +64,67 @@ async def waifu(ctx: lightbulb.Context):
     ).set_image(
         f"https://www.thiswaifudoesnotexist.net/example-{random.randint(0, 100000)}.jpg"
     )
+
+    await ctx.respond(embed=embed)
+
+
+@plugin.command
+@lightbulb.option("codigo", "El valor del color en base 16", required=False)
+@lightbulb.command("color",
+                   "Te manda el color a partir de su hexcode",
+                   aliases=["colorcode"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def color(ctx: lightbulb.Context):
+    # metodo un poco peruano
+    color = ctx.options.code
+
+    if not color:
+        color = hex(random.randint(0x000000, 0xFFFFFF)).replace("0x", "")
+    elif color.startswith("0x"):
+        if len(color) > 8:
+            await ctx.respond("te pasas bro :flushed:", delete_after=5)
+            return
+    elif color.startswith("#"):
+        if len(color) > 7:
+            await ctx.respond("te pasas bro :flushed:", delete_after=5)
+            return
+    else:
+        if len(color) > 6:
+            await ctx.respond("te pasas bro :flushed:", delete_after=5)
+            return
+
+    if type(color) == str:
+        try:
+            color = color.strip("#")
+            color = color.replace("0x", "")
+            color = hex(int(color, 16)).replace("0x", "")
+        except Exception:
+            await ctx.respond(
+                f"loco el código `{color}` no esta bien escrito :flushed: si quieres ver como se pondrian los colorcodes checkea esta página <https://htmlcolorcodes.com/> :sunglasses: ",
+                delete_after=7)
+            return
+
+    color_hex = color
+    while len(color_hex) != 6:
+        # rellenando 0 donde no hay: 0xFF -> 0x0000FF
+        color_hex = "0" + color_hex
+
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
+            ssl=False)) as session:
+        async with session.get(
+                f'https://www.thecolorapi.com/id?format=json&hex={color_hex}'
+        ) as r:
+            js = await r.json()
+
+    embed = hikari.Embed(
+        color=color_hex,
+        title=f"{js['name']['value']}",
+        description=
+        f"Colorcode: **#{color_hex}**\nEl código en base 10 sería: **{int(color, 16)}**\n Su valor en RGB: r: **{js['rgb']['r']}** g: **{js['rgb']['g']}** b: **{js['rgb']['b']}**"
+    ).set_image(
+        f"http://singlecolorimage.com/get/{color_hex}/300x120").set_thumbnail(
+            f"http://singlecolorimage.com/get/{color_hex}/100x100").set_footer(
+                "Para más info puedes ir a https://htmlcolorcodes.com/ 😎")
 
     await ctx.respond(embed=embed)
 
