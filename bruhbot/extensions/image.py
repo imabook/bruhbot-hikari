@@ -75,7 +75,7 @@ async def waifu(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def color(ctx: lightbulb.Context):
     # metodo un poco peruano
-    color = ctx.options.code
+    color = ctx.options.codigo
 
     if not color:
         color = hex(random.randint(0x000000, 0xFFFFFF)).replace("0x", "")
@@ -136,6 +136,7 @@ async def color(ctx: lightbulb.Context):
 @lightbulb.command("qr", "Crea un QR con el texto que tu quieras")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def qr(ctx: lightbulb.Context):
+
     img = await _fetch(
         ctx,
         f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={ctx.options.texto.replace(' ', '+')}"
@@ -143,6 +144,37 @@ async def qr(ctx: lightbulb.Context):
     embed = BetterEmbed(
         title="aqui tienes tu qr supongo",
         description=f"su contenido es `{ctx.options.texto}` 👍").set_image(img)
+
+    await ctx.respond(embed=embed)
+
+
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras elegir",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=hikari.Member,  # lightbulb.MemberConverter should also work
+    required=False)
+@lightbulb.command("avatar", "Muestra el avatar de un usuario")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def avatar(ctx: lightbulb.Context):
+    member = ctx.options.member
+
+    if not member:
+        member = ctx.member
+
+    embed = BetterEmbed(
+        title=f"esta es la foto de perfil de {member.username}",
+        color=member.get_top_role().color
+    ).set_image(member.avatar_url or member.default_avatar_url).set_footer(
+        random.choice([
+            "no te voy a mentir pero se le ve bastante fresco 😳",
+            "are you winning son?", "willyrex lo aprueba 😎",
+            "vegeta777 no lo aprueba 😔",
+            f"menuda foto de perfil de jugador de freefire tiene el {member.username} este 🗿",
+            "que", "esta bastante bien pero no es mejor que la mía 🤑",
+            "eso no es el juego fortnite de epic games fornite©️?", "ido"
+        ]))
 
     await ctx.respond(embed=embed)
 

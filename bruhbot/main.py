@@ -1,10 +1,11 @@
-import os
-
 import hikari
 from hikari import Intents
 import lightbulb
 
+import os
 from dotenv import load_dotenv
+
+import random
 
 load_dotenv()
 intents = (Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_BANS
@@ -94,10 +95,15 @@ async def on_error(event: lightbulb.CommandErrorEvent):
     exception = event.exception.__cause__ or event.exception
 
     if isinstance(exception, lightbulb.NotOwner):
-        return
+        return await event.context.respond(
+            random.choice([
+                "que haces goofi, no eres el libro",
+                "que pesado, tu no puedes usar este comando", "tonto"
+            ]))
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         return await event.context.respond(
-            f"Ehh esperate unos `{exception.retry_after:.2f}` segundos, vale?")
+            f"loco esperate unos `{exception.retry_after:.2f}` segundos, vale?"
+        )
     elif isinstance(event.exception, lightbulb.CommandNotFound):
         return
     elif isinstance(event.exception, lightbulb.NotEnoughArguments):
@@ -107,7 +113,7 @@ async def on_error(event: lightbulb.CommandErrorEvent):
         ])
 
         return await event.context.respond(
-            f"espera te faltan argumentos 🗣️ xd\n>>> ```asciidoc\n{formatted_args}```",
+            f"{random.choice(['espera', 'goofi', 'ehh', 'escucha,'])} te faltan argumentos 🗣️ xd\n>>> ```asciidoc\n{formatted_args}```",
             delete_after=15)
     # elif isinstance(event.exception, lightbulb.CommandInvocationError):
     #     return

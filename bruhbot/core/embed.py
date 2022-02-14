@@ -4,11 +4,12 @@ import random
 
 class BetterEmbed(hikari.Embed):
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, *, color=None, **kwargs) -> None:
 
-        if "color" not in kwargs.keys():
-            self.color = hikari.Color(0x2f3136)
+        if not color:
+            color = hikari.Color(0x2f3136)
+
+        super().__init__(color=color, **kwargs)
 
         self.set_footer(
             random.choice([
