@@ -18,8 +18,8 @@ def prefix(app: lightbulb.BotApp, message: hikari.Message):
             424213584659218445, 436521909144911874, 506565592757698600
     ]:
         return ["", "test "]
-    else:
-        return "test"
+
+    return "test"
 
 
 bot = lightbulb.BotApp(token=os.environ["TEST_TOKEN"],
@@ -94,19 +94,23 @@ async def on_error(event: lightbulb.CommandErrorEvent):
     # Unwrap the exception to get the original cause
     exception = event.exception.__cause__ or event.exception
 
+    # codefactor tells me to do it this way instead of if elif idk 😴
     if isinstance(exception, lightbulb.NotOwner):
         return await event.context.respond(
             random.choice([
                 "que haces goofi, no eres el libro",
                 "que pesado, tu no puedes usar este comando", "tonto"
             ]))
-    elif isinstance(exception, lightbulb.CommandIsOnCooldown):
+
+    if isinstance(exception, lightbulb.CommandIsOnCooldown):
         return await event.context.respond(
             f"loco esperate unos `{exception.retry_after:.2f}` segundos, vale?"
         )
-    elif isinstance(event.exception, lightbulb.CommandNotFound):
+
+    if isinstance(event.exception, lightbulb.CommandNotFound):
         return
-    elif isinstance(event.exception, lightbulb.NotEnoughArguments):
+
+    if isinstance(event.exception, lightbulb.NotEnoughArguments):
 
         formatted_args = "\n".join([
             f'{e.name} :: {e.description}' for e in exception.missing_options

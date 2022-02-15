@@ -3,6 +3,7 @@ import lightbulb
 
 from core.embed import BetterEmbed
 
+# from typing import Union
 import random
 import aiohttp
 import io
@@ -153,12 +154,18 @@ async def qr(ctx: lightbulb.Context):
     "member",
     "El miembro que quieras elegir",
     modifier=lightbulb.OptionModifier.CONSUME_REST,
-    type=hikari.Member,  # lightbulb.MemberConverter should also work
-    required=False)
+    type=lightbulb.MemberConverter,
+    # gotta check the diff (if theres any) between this and hikari.Member/hikari.OptionType.USER
+    # and yeah im using the lightbulb memberconverter cause i still have to make my own converter
+    required=False,
+)
 @lightbulb.command("avatar", "Muestra el avatar de un usuario")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def avatar(ctx: lightbulb.Context):
+
     member = ctx.options.member
+
+    print(member)
 
     if not member:
         member = ctx.member
@@ -173,7 +180,7 @@ async def avatar(ctx: lightbulb.Context):
             "vegeta777 no lo aprueba 😔",
             f"menuda foto de perfil de jugador de freefire tiene el {member.username} este 🗿",
             "que", "esta bastante bien pero no es mejor que la mía 🤑",
-            "eso no es el juego fortnite de epic games fornite©️?", "ido"
+            "free fire?", "ido"
         ]))
 
     await ctx.respond(embed=embed)
