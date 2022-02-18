@@ -7,13 +7,15 @@ from dotenv import load_dotenv
 
 import random
 
+from core.bot import BruhApp
+
 load_dotenv()
 intents = (Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_BANS
            | Intents.GUILD_EMOJIS | Intents.ALL_MESSAGES
            | Intents.GUILD_MESSAGE_REACTIONS | Intents.ALL_MESSAGE_TYPING)
 
 
-def prefix(app: lightbulb.BotApp, message: hikari.Message):
+def prefix(app: BruhApp, message: hikari.Message):
     if message.author.id in [
             424213584659218445, 436521909144911874, 506565592757698600
     ]:
@@ -22,11 +24,11 @@ def prefix(app: lightbulb.BotApp, message: hikari.Message):
     return "test"
 
 
-bot = lightbulb.BotApp(token=os.environ["TEST_TOKEN"],
-                       intents=intents,
-                       prefix=prefix,
-                       owner_ids=[424213584659218445, 436521909144911874],
-                       case_insensitive_prefix_commands=True)
+bot = BruhApp(token=os.environ["TEST_TOKEN"],
+              intents=intents,
+              prefix=prefix,
+              owner_ids=[424213584659218445, 436521909144911874],
+              case_insensitive_prefix_commands=True)
 
 [
     bot.load_extensions(f"extensions.{i[:-3]}")
@@ -79,6 +81,30 @@ async def reload(ctx: lightbulb.Context):
         await ctx.respond("hecho rey <:tula:748526797913849956>")
     except Exception as e:
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{(e)}\n```")
+
+
+@bot.listen(event_type=hikari.MessageUpdateEvent)
+async def on_edit(event: hikari.MessageUpdateEvent):
+    try:
+        if event.message.author.is_bot:
+            return
+    except:
+        # sometimes author is Undefined ig if its undefined it cant never be the main bot -> so actual user not bot
+        pass
+
+    try:
+        ctx = await bot.get_prefix_context(event=event)
+        await bot.process_prefix_commands(context=ctx)
+    except Exception as e:
+        print(e)
+
+    # print(bot.get_prefix_command(
+    # event.message.content))  # gotta parse the prefix out and the *args
+
+    # try:
+    #     await bot.process_prefix_commands(bot.cmdctx[event.message_id])
+    # except Exception as e:
+    #     print(e)
 
 
 @bot.listen(event_type=hikari.StoppingEvent)

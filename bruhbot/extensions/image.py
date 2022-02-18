@@ -165,8 +165,6 @@ async def avatar(ctx: lightbulb.Context):
 
     member = ctx.options.member
 
-    print(member)
-
     if not member:
         member = ctx.member
 
