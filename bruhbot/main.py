@@ -3,6 +3,7 @@ from hikari import Intents
 import lightbulb
 
 import os
+import datetime
 from dotenv import load_dotenv
 
 import random
@@ -16,7 +17,7 @@ intents = (Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_BANS
 
 
 def prefix(app: BruhApp, message: hikari.Message):
-    if message.author.id in [
+    if message.author and message.author.id in [
             424213584659218445, 436521909144911874, 506565592757698600
     ]:
         return ["", "test "]
@@ -85,6 +86,15 @@ async def reload(ctx: lightbulb.Context):
 
 @bot.listen(event_type=hikari.MessageUpdateEvent)
 async def on_edit(event: hikari.MessageUpdateEvent):
+
+    # me cago en dios que chorizal
+    time = datetime.datetime.utcnow().replace(
+        tzinfo=datetime.timezone.utc) - event.message.created_at.replace(
+            tzinfo=datetime.timezone.utc)
+
+    if time > datetime.timedelta(hours=3):
+        return
+
     try:
         if event.message.author.is_bot:
             return
@@ -96,15 +106,8 @@ async def on_edit(event: hikari.MessageUpdateEvent):
         ctx = await bot.get_prefix_context(event=event)
         await bot.process_prefix_commands(context=ctx)
     except Exception as e:
-        print(e)
-
-    # print(bot.get_prefix_command(
-    # event.message.content))  # gotta parse the prefix out and the *args
-
-    # try:
-    #     await bot.process_prefix_commands(bot.cmdctx[event.message_id])
-    # except Exception as e:
-    #     print(e)
+        # print(e)  # this be outputting bullshit errors doe
+        pass
 
 
 @bot.listen(event_type=hikari.StoppingEvent)
