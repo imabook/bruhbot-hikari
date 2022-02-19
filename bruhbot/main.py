@@ -5,6 +5,7 @@ import lightbulb
 import os
 import datetime
 from dotenv import load_dotenv
+from contextlib import suppress
 
 import random
 
@@ -102,12 +103,14 @@ async def on_edit(event: hikari.MessageUpdateEvent):
         # sometimes author is Undefined ig if its undefined it cant never be the main bot -> so actual user not bot
         pass
 
-    try:
+    with suppress(AttributeError):
         ctx = await bot.get_prefix_context(event=event)
-        await bot.process_prefix_commands(context=ctx)
-    except Exception as e:
-        # print(e)  # this be outputting bullshit errors doe
-        pass
+
+        if ctx:
+            try:
+                await bot.process_prefix_commands(context=ctx)
+            except Exception as e:
+                await _handle_error(ctx, e)
 
 
 @bot.listen(event_type=hikari.StoppingEvent)
@@ -117,41 +120,44 @@ async def on_disconnect(event: hikari.StoppingEvent):
     await channel.send("RIP <@424213584659218445>", user_mentions=False)
 
 
-@bot.listen(lightbulb.CommandErrorEvent)
-async def on_error(event: lightbulb.CommandErrorEvent):
-
+async def _handle_error(ctx, exception):
     # Unwrap the exception to get the original cause
-    exception = event.exception.__cause__ or event.exception
+    exception = exception.__cause__ or exception
 
     # codefactor tells me to do it this way instead of if elif idk 😴
     if isinstance(exception, lightbulb.NotOwner):
-        return await event.context.respond(
+        return await ctx.respond(
             random.choice([
                 "que haces goofi, no eres el libro",
                 "que pesado, tu no puedes usar este comando", "tonto"
             ]))
 
     if isinstance(exception, lightbulb.CommandIsOnCooldown):
-        return await event.context.respond(
+        return await ctx.respond(
             f"loco esperate unos `{exception.retry_after:.2f}` segundos, vale?"
         )
 
-    if isinstance(event.exception, lightbulb.CommandNotFound):
+    if isinstance(exception, lightbulb.CommandNotFound):
         return
 
-    if isinstance(event.exception, lightbulb.NotEnoughArguments):
+    if isinstance(exception, lightbulb.NotEnoughArguments):
 
         formatted_args = "\n".join([
             f'{e.name} :: {e.description}' for e in exception.missing_options
         ])
 
-        return await event.context.respond(
+        return await ctx.respond(
             f"{random.choice(['espera', 'goofi', 'ehh', 'escucha,'])} te faltan argumentos 🗣️ xd\n>>> ```asciidoc\n{formatted_args}```",
             delete_after=15)
     # elif isinstance(event.exception, lightbulb.CommandInvocationError):
     #     return
 
     raise exception
+
+
+@bot.listen(lightbulb.CommandErrorEvent)
+async def on_error(event: lightbulb.CommandErrorEvent):
+    await _handle_error(event.context, event.exception)
 
 
 if __name__ == "__main__":
