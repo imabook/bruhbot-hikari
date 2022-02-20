@@ -18,5 +18,6 @@ class BetterEmbed(hikari.Embed):
                 "no puedo mas", "fuente: lo vi en tiktok 🌝",
                 "2013 va a ser mi año 📦", "que haces 💀", "npc? 📸",
                 "checkea chepa 🐒", "no publico mis logros porque no tengo 🧐",
-                "texto ejemplo", "willy no quiero tu golem en serio 😪"
+                "texto ejemplo", "willy no quiero tu golem en serio 😪",
+                "i love lean 💜"
             ]))

@@ -3,10 +3,13 @@ import lightbulb
 
 from core.embed import BetterEmbed
 
-# from typing import Union
 import random
 import aiohttp
 import io
+
+import PIL.ImageOps as PIO
+from PIL import Image as Img
+from PIL import ImageFilter, ImageFont, ImageDraw
 
 plugin = lightbulb.Plugin("ImagePlugin")
 
@@ -163,14 +166,15 @@ async def qr(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def avatar(ctx: lightbulb.Context):
 
-    member = ctx.options.member
+    member = ctx.options.member or ctx.member
 
-    if not member:
-        member = ctx.member
+    color = None
+
+    if isinstance(member, hikari.Member):
+        color = member.get_top_role().color
 
     embed = BetterEmbed(
-        title=f"esta es la foto de perfil de {member.username}",
-        color=member.get_top_role().color
+        title=f"esta es la foto de perfil de {member.username}", color=color
     ).set_image(member.avatar_url or member.default_avatar_url).set_footer(
         random.choice([
             "no te voy a mentir pero se le ve bastante fresco 😳",
@@ -182,6 +186,35 @@ async def avatar(ctx: lightbulb.Context):
         ]))
 
     await ctx.respond(embed=embed)
+
+
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras elegir",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=lightbulb.UserConverter,
+    required=False,
+)
+@lightbulb.command("invert",
+                   "Invierte los colores de la foto de perfil de alguien")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def invert(ctx: lightbulb.Context):
+
+    member = ctx.options.member or ctx.member
+
+    bytes = await _fetch(
+        ctx, member.avatar_url.url or member.default_avatar_url.url)
+    img = PIO.invert(Img.open(bytes).convert("RGB"))
+
+    #  god bless https://stackoverflow.com/a/33117447/12595762
+    byte_array = io.BytesIO()
+    img.save(byte_array, format="PNG")
+    byte_array = byte_array.getvalue()
+
+    await ctx.respond(random.choice(
+        ["🙃 ɐᴉpǝɯoɔ ɐɾɐɾ", "ɾɐɾɐ ɔoɯǝpᴉɐ 🙃", "🙂 aidemoc ajaj"]),
+                      attachment=byte_array)
 
 
 def load(bot):
