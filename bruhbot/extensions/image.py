@@ -203,9 +203,9 @@ async def invert(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
 
-    bytes = await _fetch(
+    byte_array = await _fetch(
         ctx, member.avatar_url.url or member.default_avatar_url.url)
-    img = PIO.invert(Img.open(bytes).convert("RGB"))
+    img = PIO.invert(Img.open(byte_array).convert("RGB"))
 
     #  god bless https://stackoverflow.com/a/33117447/12595762
     byte_array = io.BytesIO()

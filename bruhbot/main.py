@@ -99,7 +99,7 @@ async def on_edit(event: hikari.MessageUpdateEvent):
     try:
         if event.message.author.is_bot:
             return
-    except:
+    except Exception:
         # sometimes author is Undefined ig if its undefined it cant never be the main bot -> so actual user not bot
         pass
 

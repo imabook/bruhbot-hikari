@@ -11,9 +11,9 @@ empty_kwargs = {
 
 class BetterContext(lightbulb.PrefixContext):
 
-    def get_message(self, id: int) -> hikari.Message | NoneType:
+    def get_message(self, _id: int) -> hikari.Message | NoneType:
 
-        if message := self.bot.cache.get_message(id):
+        if message := self.bot.cache.get_message(_id):
             return message
 
         return None
