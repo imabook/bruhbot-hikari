@@ -25,6 +25,23 @@ async def _fetch(ctx: lightbulb.Context, url: str):
                 return io.BytesIO(await r.read())
 
 
+def _img_to_bytes(img):
+    #  god bless https://stackoverflow.com/a/33117447/12595762
+    byte_array = io.BytesIO()
+    img.save(byte_array, format="PNG")
+    return byte_array.getvalue()
+
+
+def _blend(avatar, image, opacity=70):
+    avatar = avatar.resize((324, 324)).convert("RGBA")
+    img = Img.open(f"./bruhbot/assets/images/{image}").resize(
+        (324, 324)).convert("RGBA")
+    img.putalpha(opacity)
+    avatar.paste(img, (0, 0), img)
+
+    return _img_to_bytes(avatar)
+
+
 @plugin.command
 @lightbulb.command("persona", "Manda una foto de una persona que no existe")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -157,9 +174,7 @@ async def qr(ctx: lightbulb.Context):
     "member",
     "El miembro que quieras elegir",
     modifier=lightbulb.OptionModifier.CONSUME_REST,
-    type=lightbulb.MemberConverter,
-    # gotta check the diff (if theres any) between this and hikari.Member/hikari.OptionType.USER
-    # and yeah im using the lightbulb memberconverter cause i still have to make my own converter
+    type=hikari.Member,
     required=False,
 )
 @lightbulb.command("avatar", "Muestra el avatar de un usuario")
@@ -193,7 +208,7 @@ async def avatar(ctx: lightbulb.Context):
     "member",
     "El miembro que quieras elegir",
     modifier=lightbulb.OptionModifier.CONSUME_REST,
-    type=lightbulb.UserConverter,
+    type=hikari.User,
     required=False,
 )
 @lightbulb.command("invert",
@@ -204,17 +219,53 @@ async def invert(ctx: lightbulb.Context):
     member = ctx.options.member or ctx.member
 
     byte_array = await _fetch(
-        ctx, member.avatar_url.url or member.default_avatar_url.url)
+        ctx, member.avatar_url.url
+        if member.avatar_url else member.default_avatar_url.url)
     img = PIO.invert(Img.open(byte_array).convert("RGB"))
 
-    #  god bless https://stackoverflow.com/a/33117447/12595762
-    byte_array = io.BytesIO()
-    img.save(byte_array, format="PNG")
-    byte_array = byte_array.getvalue()
+    byte_array = _img_to_bytes(img)
 
     await ctx.respond(random.choice(
         ["🙃 ɐᴉpǝɯoɔ ɐɾɐɾ", "ɾɐɾɐ ɔoɯǝpᴉɐ 🙃", "🙂 aidemoc ajaj"]),
                       attachment=byte_array)
+
+
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras elegir",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=hikari.User,
+    required=False,
+)
+@lightbulb.command("español",
+                   "Dice como de española es una persona",
+                   aliases=["españa"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def spanish(ctx: lightbulb.Context):
+
+    member = ctx.options.member or ctx.member
+
+    byte_array = await _fetch(
+        ctx, member.avatar_url.url
+        if member.avatar_url else member.default_avatar_url.url)
+
+    byte_array = _blend(Img.open(byte_array), "españa.png")
+
+    meter = random.randint(0, 100)
+    if meter == 0:
+        text = f"ayy pa, **0%** de español, eres un alto peruano {member.name} 🐒"
+    elif meter <= 25:
+        text = f"es poquito pero eres **{meter}%** español, sigue así 😎"
+    elif meter <= 75:
+        text = f"eh eh eh eh, que tener un **{meter}%** de español no esta nada mal, no te desanimes 🧐"
+    elif meter <= 99:
+        text = f"papurri estas loco papurri, tremendo español **{meter}%** que tenemos aqui, estas l0co 🤑"
+    else:
+        # meter == 100
+        text = f"lo veo y no lo creo 😳😳😳, eres **100%** español!!111!1"
+
+    await ctx.respond(text, attachment=byte_array)
 
 
 def load(bot):
