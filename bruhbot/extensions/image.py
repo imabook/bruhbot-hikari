@@ -29,6 +29,7 @@ def _img_to_bytes(img):
     #  god bless https://stackoverflow.com/a/33117447/12595762
     byte_array = io.BytesIO()
     img.save(byte_array, format="PNG")
+
     return byte_array.getvalue()
 
 
@@ -264,6 +265,41 @@ async def spanish(ctx: lightbulb.Context):
     else:
         # meter == 100
         text = f"lo veo y no lo creo 😳😳😳, eres **100%** español!!111!1"
+
+    await ctx.respond(text, attachment=byte_array)
+
+
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras elegir",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=hikari.User,
+    required=False,
+)
+@lightbulb.command("gay", "Dice como de gay es una persona")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def gay(ctx: lightbulb.Context):
+
+    member = ctx.options.member or ctx.member
+
+    byte_array = await _fetch(
+        ctx, member.avatar_url.url
+        if member.avatar_url else member.default_avatar_url.url)
+
+    byte_array = _blend(Img.open(byte_array), "gay.png")
+
+    meter = random.randint(0, 100)
+    if meter == 0:
+        text = f"esto si que es totalmente epico, estoy notando un **0%** de gay, enhorabuena {member.name}"
+    elif meter <= 25:
+        text = f"es poquito pero te he diagnosticado con el gay, tienes un **{meter}%**"
+    elif meter <= 75:
+        text = f"**{meter}%** de gay ⚠️"
+    elif meter <= 99:
+        text = f"dios **{meter}%** de gay, eso es mucho más de uno"
+    else:
+        text = f"no puede ser 😳😳😳 **100%** gay"
 
     await ctx.respond(text, attachment=byte_array)
 
