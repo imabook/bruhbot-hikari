@@ -304,6 +304,44 @@ async def gay(ctx: lightbulb.Context):
     await ctx.respond(text, attachment=byte_array)
 
 
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras elegir",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=hikari.User,
+    required=False,
+)
+@lightbulb.command("comunista",
+                   "Dice como de comunista es una persona",
+                   aliases=["comunismo"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def communism(ctx: lightbulb.Context):
+
+    member = ctx.options.member or ctx.member
+
+    byte_array = await _fetch(
+        ctx, member.avatar_url.url
+        if member.avatar_url else member.default_avatar_url.url)
+
+    byte_array = _blend(Img.open(byte_array), "comunismo.png")
+
+    meter = random.randint(0, 100)
+    if meter == 0:
+        text = f"simplemente 0%"
+    elif meter <= 25:
+        text = f"top **{meter}%** de comunismo"
+    elif meter <= 75:
+        text = f"china cuando **{meter}%** de comunismo"
+    elif meter <= 99:
+        text = f"**{meter}%** 😈😈"
+    else:
+        # meter == 100
+        text = f"finalmente 100% de comunismo"
+
+    await ctx.respond(text, attachment=byte_array)
+
+
 def load(bot):
     bot.add_plugin(plugin)
 
