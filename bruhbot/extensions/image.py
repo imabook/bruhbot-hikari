@@ -207,7 +207,7 @@ async def avatar(ctx: lightbulb.Context):
 @plugin.command
 @lightbulb.option(
     "member",
-    "El miembro que quieras elegir",
+    "El miembro que quieras invertir",
     modifier=lightbulb.OptionModifier.CONSUME_REST,
     type=hikari.User,
     required=False,
@@ -340,6 +340,36 @@ async def communism(ctx: lightbulb.Context):
         text = f"finalmente 100% de comunismo"
 
     await ctx.respond(text, attachment=byte_array)
+
+
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras pixelar",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=hikari.User,
+    required=False,
+)
+@lightbulb.command("pixelar", "Pixela a una persona", aliases=["censurar"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def pixelar(ctx: lightbulb.Context):
+
+    member = ctx.options.member or ctx.member
+
+    byte_array = await _fetch(
+        ctx, member.avatar_url.url
+        if member.avatar_url else member.default_avatar_url.url)
+
+    img = Img.open(byte_array)
+    imgs = img.resize((16, 16), resample=Img.BILINEAR)
+    # (img.size) a (256, 256) porque creo que se ve mejor asi
+    imgs = imgs.resize((256, 256), Img.NEAREST)
+
+    byte_array = _img_to_bytes(imgs)
+
+    await ctx.respond(random.choice(
+        ["explicit", "█████ de ████    ███████", "🥶"]),
+                      attachment=byte_array)
 
 
 def load(bot):

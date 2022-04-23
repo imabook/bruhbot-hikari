@@ -32,6 +32,7 @@ bot = BruhApp(token=os.environ["TEST_TOKEN"],
               owner_ids=[424213584659218445, 436521909144911874],
               case_insensitive_prefix_commands=True)
 
+# load them cogs
 [
     bot.load_extensions(f"extensions.{i[:-3]}")
     for i in os.listdir("./bruhbot/extensions/") if i.endswith(".py")
@@ -40,15 +41,21 @@ bot = BruhApp(token=os.environ["TEST_TOKEN"],
 
 @bot.command
 @lightbulb.add_checks(lightbulb.owner_only)
-@lightbulb.option("plugin", "Plugin para cargar")
+@lightbulb.option(
+    "plugin",
+    "Plugin para cargar",
+    choices=[
+        e.replace("extensions.", "").capitalize() for e in bot.extensions
+    ],
+)
 @lightbulb.command("load", "Carga el plugin especificado", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def load(ctx):
     if not ctx.options.plugin:
         return await ctx.respond("pero dime que plugin cargar no?")
 
     try:
-        bot.load_extensions(f"extensions.{ctx.options.plugin}")
+        bot.load_extensions(f"extensions.{ctx.options.plugin}".lower())
         await ctx.respond("hecho rey <:tula:748526797913849956>")
     except Exception as e:
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{e}\n```")
@@ -56,15 +63,20 @@ async def load(ctx):
 
 @bot.command
 @lightbulb.add_checks(lightbulb.owner_only)
-@lightbulb.option("plugin", "Plugin para cargar")
+@lightbulb.option("plugin",
+                  "Plugin para cargar",
+                  choices=[
+                      e.replace("extensions.", "").capitalize()
+                      for e in bot.extensions
+                  ])
 @lightbulb.command("unload", "Elimina el plugin especificado", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def unload(ctx):
     if not ctx.options.plugin:
         return await ctx.respond("pero dime que plugin eliminar no?")
 
     try:
-        bot.unload_extensions(f"extensions.{ctx.options.plugin}")
+        bot.unload_extensions(f"extensions.{ctx.options.plugin}".lower())
         await ctx.respond("hecho rey <:tula:748526797913849956>")
     except Exception as e:
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{e}\n```")
@@ -73,7 +85,7 @@ async def unload(ctx):
 @bot.command
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("reload", "Recarga todos los plugins", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def reload(ctx: lightbulb.Context):
     try:
         [
@@ -126,16 +138,17 @@ async def _handle_error(ctx, exception):
 
     # codefactor tells me to do it this way instead of if elif idk 😴
     if isinstance(exception, lightbulb.NotOwner):
-        return await ctx.respond(
-            random.choice([
-                "que haces goofi, no eres el libro",
-                "que pesado, tu no puedes usar este comando", "tonto"
-            ]))
+        return await ctx.respond(random.choice([
+            "que haces goofi, no eres el libro",
+            "que pesado, tu no puedes usar este comando", "tonto"
+        ]),
+                                 flags=hikari.MessageFlag.EPHEMERAL)
+        # 64 -> EPHEMERAL `https://www.hikari-py.dev/hikari/messages.html#hikari.messages.MessageFlag`
 
     if isinstance(exception, lightbulb.CommandIsOnCooldown):
         return await ctx.respond(
-            f"loco esperate unos `{exception.retry_after:.2f}` segundos, vale?"
-        )
+            f"loco esperate unos `{exception.retry_after:.2f}` segundos, vale?",
+            delete_afte=10)
 
     if isinstance(exception, lightbulb.CommandNotFound):
         return

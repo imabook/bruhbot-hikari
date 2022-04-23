@@ -6,6 +6,7 @@ empty_kwargs = {
     "content": None,
     "message": None,
     "embed": None,
+    "component": None
 }
 
 
@@ -58,6 +59,7 @@ class BetterContext(lightbulb.PrefixContext):
         if len(self.bot.msgcmd) > 3:
             del self.bot.msgcmd[next(iter(
                 self.bot.msgcmd))]  # to get and delete the first key
+
             # ill probably have to make that number bigger or only store messages from small/not really active guilds (or whitelisted and make some 🤑💸💸)
 
         return res

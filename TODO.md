@@ -6,6 +6,7 @@ Las cosas que quiero ir haciendo/portando del bot:
 
 -   [ ] custom member parser (para que funcionen los ^)
 -   [ ] ya me acordare de lo demas
+-   [ ] comandos de admin solo me aparezcan a mi (slash commands)
 
 ### cosas que ya he hecho 🥵
 
