@@ -368,8 +368,62 @@ async def pixelar(ctx: lightbulb.Context):
     byte_array = _img_to_bytes(imgs)
 
     await ctx.respond(random.choice(
-        ["explicit", "█████ de ████    ███████", "🥶"]),
+        ["explicit 🥷", "█████ de ████    ███████", "broo 🥶"]),
                       attachment=byte_array)
+
+
+@plugin.command
+@lightbulb.option(
+    "member",
+    "El miembro que quieras difuminar",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    type=hikari.User,
+    required=False,
+)
+@lightbulb.command("blur", "Difumina a una persona")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def blur(ctx: lightbulb.Context):
+    member = ctx.options.member or ctx.member
+
+    byte_array = await _fetch(
+        ctx, member.avatar_url.url
+        if member.avatar_url else member.default_avatar_url.url)
+
+    img = Img.open(byte_array)
+    img = img.filter(ImageFilter.GaussianBlur(10))
+
+    byte_array = _img_to_bytes(img)
+
+    await ctx.respond(random.choice([
+        "toma, lo necesitas 🤏👓", "que va, si yo veo bien", "no se enfoca",
+        "joder macho cada día veo menos 😔"
+    ]),
+                      attachment=byte_array)
+
+
+@plugin.command
+@lightbulb.option(
+    "text",
+    "El texto que quieras poner en los carteles",
+    modifier=lightbulb.OptionModifier.CONSUME_REST,
+    required=True,
+)
+@lightbulb.command("sign", "Escribe texto en un cartel", aliases=["cartel"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def blur(ctx: lightbulb.Context):
+    text = ctx.options.sign
+
+    mc_pics = [("minecraft_1", (936, 436), 55, 463),
+               ("minecraft_2", (946, 250), 66, 530),
+               ("minecraft_3", (969, 380), 45, 366),
+               ("minecraft_4", (889, 455), 50, 422),
+               ("minecraft_5", (960, 495), 33, 253),
+               ("minecraft_6", (975, 364), 50, 421),
+               ("minecraft_7", (976, 543), 31, 233),
+               ("minecraft_8", (1006, 508), 37, 292),
+               ("minecraft_9", (807, 418), 42, 353),
+               ("minecraft_10", (978, 473), 32, 234),
+               ("minecraft_11", (953, 426), 76, 672)]
 
 
 def load(bot):
