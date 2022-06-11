@@ -11,6 +11,8 @@ import PIL.ImageOps as PIO
 from PIL import Image as Img
 from PIL import ImageFilter, ImageFont, ImageDraw
 
+from utils.wrapper import wrap_word
+
 plugin = lightbulb.Plugin("ImagePlugin")
 
 
@@ -410,8 +412,8 @@ async def blur(ctx: lightbulb.Context):
 )
 @lightbulb.command("sign", "Escribe texto en un cartel", aliases=["cartel"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def blur(ctx: lightbulb.Context):
-    text = ctx.options.sign
+async def sign(ctx: lightbulb.Context):
+    text = ctx.options.text
 
     mc_pics = [("minecraft_1", (936, 436), 55, 463),
                ("minecraft_2", (946, 250), 66, 530),
@@ -424,6 +426,29 @@ async def blur(ctx: lightbulb.Context):
                ("minecraft_9", (807, 418), 42, 353),
                ("minecraft_10", (978, 473), 32, 234),
                ("minecraft_11", (953, 426), 76, 672)]
+
+    # epic obj destructuring
+    pic, pos, size, long = random.choice(mc_pics)
+    font = ImageFont.truetype("./bruhbot/assets/fonts/minecraft.otf", size)
+
+    img = Img.open(f"./bruhbot/assets/images/{pic}.png").convert("RGBA")
+    img_draw = ImageDraw.Draw(img)
+
+    text = [text.strip() for text in text.split("\n")]
+    del text[4:]  # limitar a 4 lineas
+    text = "\n".join(text)[:100]  # limitar los caracteres
+
+    w, _ = img_draw.textsize(await wrap_word(font, text, long, size),
+                             font=font)
+    img_draw = img_draw.text((pos[0] - w / 2, pos[1]),
+                             await wrap_word(font, text, long, size),
+                             (0, 0, 0),
+                             font=font,
+                             align="center",
+                             spacing=size / 5)
+
+    byte_array = _img_to_bytes(img)
+    await ctx.respond(attachment=byte_array)
 
 
 def load(bot):
