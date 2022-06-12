@@ -1,6 +1,6 @@
 import lightbulb
 
-plugin = lightbulb.Plugin("PrayPlugin")
+plugin = lightbulb.Plugin("Economía")
 
 
 @plugin.command

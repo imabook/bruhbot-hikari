@@ -30,13 +30,8 @@ bot = BruhApp(token=os.environ["TEST_TOKEN"],
               intents=intents,
               prefix=prefix,
               owner_ids=[424213584659218445, 436521909144911874],
-              case_insensitive_prefix_commands=True)
-
-# load them cogs
-[
-    bot.load_extensions(f"extensions.{i[:-3]}")
-    for i in os.listdir("./bruhbot/extensions/") if i.endswith(".py")
-]
+              case_insensitive_prefix_commands=True,
+              help_class=None)
 
 
 @bot.command
@@ -132,6 +127,20 @@ async def on_disconnect(event: hikari.StoppingEvent):
     await channel.send("RIP <@424213584659218445>", user_mentions=False)
 
 
+@bot.listen(event_type=hikari.StartedEvent)
+async def on_connect(event: hikari.StartedEvent):
+    # load them cogs
+    [
+        bot.load_extensions(f"extensions.{i[:-3]}")
+        for i in os.listdir("./bruhbot/extensions/") if i.endswith(".py")
+    ]
+
+
+@bot.listen(lightbulb.CommandErrorEvent)
+async def on_error(event: lightbulb.CommandErrorEvent):
+    await _handle_error(event.context, event.exception)
+
+
 async def _handle_error(ctx, exception):
     # Unwrap the exception to get the original cause
     exception = exception.__cause__ or exception
@@ -166,11 +175,6 @@ async def _handle_error(ctx, exception):
     #     return
 
     raise exception
-
-
-@bot.listen(lightbulb.CommandErrorEvent)
-async def on_error(event: lightbulb.CommandErrorEvent):
-    await _handle_error(event.context, event.exception)
 
 
 if __name__ == "__main__":

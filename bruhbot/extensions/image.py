@@ -13,7 +13,7 @@ from PIL import ImageFilter, ImageFont, ImageDraw
 
 from utils.wrapper import wrap_word
 
-plugin = lightbulb.Plugin("ImagePlugin")
+plugin = lightbulb.Plugin("Imágenes")
 
 
 async def _fetch(ctx: lightbulb.Context, url: str):
