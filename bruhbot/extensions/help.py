@@ -1,3 +1,4 @@
+import hikari
 import lightbulb
 from lightbulb.utils import nav
 
@@ -63,11 +64,20 @@ def build_command_embed(ctx: lightbulb.Context, cmd: lightbulb.CommandLike):
 
     aliases = ""
     if cmd.aliases:
-        aliases = f" ({', '.join(cmd.aliases)}) "
+        aliases = f" ({', '.join(cmd.aliases)})"
 
     options = ""
+    option_info = ""
     if cmd.options:
         options = f" {' '.join(f'<{c}>'.upper() for c in cmd.options)}"
+
+        # tengo que ponerlo separado porque no se puede poner \ en fstrings
+        backslash = "\n\t"
+        option_info = f"\n\n".join(
+            f'* {c.name.capitalize()} -> {c.description}{backslash + "Tipo: " + str(c.arg_type) if c.arg_type else ""}{backslash + "Valor por defecto: " + str(c.default) if c.default else backslash + "Valor por defecto: Ninguno"}\n\tEs requerido? {"Sí" if c.required else "No"}'
+            for c in cmd.options.values())
+
+        option_info = '\n=== Información de sus opciones ===\n' + option_info
 
     embed = BetterEmbed(
         title=cmd.name.capitalize(),
@@ -76,6 +86,7 @@ def build_command_embed(ctx: lightbulb.Context, cmd: lightbulb.CommandLike):
 {cmd.name}{aliases}{options} :: {cmd.description}
 
 Uso: {ctx.prefix}{cmd.signature}
+{option_info if options else ''}
 ```""",
         color=ctx.get_guild().get_member(
             ctx.app.get_me().id).get_top_role().color,
@@ -113,21 +124,18 @@ async def help_cmd(ctx: lightbulb.Context):
         "Comandos de economía", """
 ```md
 Estos son los comandos religiosos y la parte de economia del bot.
-Pulsa el 🙏 para ver los comandos
 ```""")
 
     embed.add_field(
         "Comandos de imágenes", """
 ```md
 Estos son los comandos con los que puedes hacer/editar fotos.
-Pulsa el 🖼️ para ver los comandos
 ```""")
 
     embed.add_field(
         "Otros comandos", """
 ```md
 Estos son el resto de comandos, no tienen nada en común y tampoco son tan interesanes.
-Pulsa el 😳 para ver los comandos
 ```""")
 
     pages = [embed] + build_pages(ctx)
