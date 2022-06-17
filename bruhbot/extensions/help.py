@@ -13,6 +13,9 @@ def build_pages(ctx: lightbulb.Context):
     embeds = []
 
     for name, plugin in ctx.bot.plugins.items():
+        if name == "Ayuda":
+            continue
+
         embed = BetterEmbed(
             title=name,
             description=
