@@ -12,6 +12,10 @@ def build_pages(ctx: lightbulb.Context):
 
     embeds = []
 
+    id = 693163993841270876
+    if ctx.bot.get_me():
+        id = ctx.bot.get_me().id
+
     for name, plugin in ctx.bot.plugins.items():
         if name == "Ayuda" or name == "Libro":
             continue
@@ -20,8 +24,7 @@ def build_pages(ctx: lightbulb.Context):
             title=name,
             description=
             f"Para más información sobre estos comandos puedes hacer {ctx.prefix}help [comando] o visitar la [página web](https://mefolloatumadre.tk) del bot",
-            color=ctx.get_guild().get_member(
-                ctx.app.get_me().id).get_top_role().color,
+            color=ctx.get_guild().get_member(id).get_top_role().color,
             timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
         commands = []
@@ -120,13 +123,16 @@ async def help_cmd(ctx: lightbulb.Context):
         if comando := ctx.bot.get_slash_command(comando):
             return await ctx.respond(embed=build_command_embed(ctx, comando))
 
+    id = 693163993841270876
+    if ctx.bot.get_me():
+        id = ctx.bot.get_me().id
+
     # h i really dont know if thats the best way to get the bots color
     embed = BetterEmbed(
         title="Ayuda del bot",
         description=
         f"Para más información sobre los comandos puedes hacer {ctx.prefix}help [comando] o visitar la [página web](http://mefolloatumadre.tk/) del bot",
-        color=ctx.get_guild().get_member(
-            ctx.app.get_me().id).get_top_role().color,
+        color=ctx.get_guild().get_member(id).get_top_role().color,
         timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
     embed.add_field(
