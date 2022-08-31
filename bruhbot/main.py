@@ -31,14 +31,12 @@ def prefix(app: BruhApp, message: hikari.Message):
     return "bruh"
 
 
-bot = BruhApp(token=os.environ["BRUH_TOKEN"],
-              intents=intents,
-              prefix=prefix,
-              owner_ids=[424213584659218445, 436521909144911874],
-              case_insensitive_prefix_commands=True,
-              help_class=None)
-miru.load(bot)
-tasks.load(bot)
+bot = lightbulb.BotApp(token=os.environ["BRUH_TOKEN"],
+                       intents=intents,
+                       prefix="bruh ",
+                       owner_ids=[424213584659218445, 436521909144911874],
+                       case_insensitive_prefix_commands=True,
+                       help_class=None)
 
 
 @bot.command
@@ -99,38 +97,41 @@ async def reload(ctx: lightbulb.Context):
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{(e)}\n```")
 
 
-@bot.listen(hikari.MessageUpdateEvent)
-async def on_edit(event: hikari.MessageUpdateEvent):
+# @bot.listen(hikari.MessageUpdateEvent)
+# async def on_edit(event: hikari.MessageUpdateEvent):
 
-    # me cago en dios que chorizal
-    time = datetime.datetime.utcnow().replace(
-        tzinfo=datetime.timezone.utc) - event.message.created_at.replace(
-            tzinfo=datetime.timezone.utc)
+#     # me cago en dios que chorizal
+#     time = datetime.datetime.utcnow().replace(
+#         tzinfo=datetime.timezone.utc) - event.message.created_at.replace(
+#             tzinfo=datetime.timezone.utc)
 
-    if time > datetime.timedelta(hours=3):
-        return
+#     if time > datetime.timedelta(hours=3):
+#         return
 
-    try:
-        if event.message.author.is_bot:
-            return
-    except Exception:
-        # sometimes author is Undefined ig if its undefined it cant never be the main bot -> so actual user not bot
-        pass
+#     try:
+#         if event.message.author.is_bot:
+#             return
+#     except Exception:
+#         # sometimes author is Undefined ig if its undefined it cant never be the main bot -> so actual user not bot
+#         pass
 
-    with suppress(AttributeError):
-        ctx = await bot.get_prefix_context(event=event)
+#     with suppress(AttributeError):
+#         ctx = await bot.get_prefix_context(event=event)
 
-        if ctx:
-            try:
-                await bot.process_prefix_commands(context=ctx)
-            except Exception as e:
-                await _handle_error(ctx, e)
+#         if ctx:
+#             try:
+#                 await bot.process_prefix_commands(context=ctx)
+#             except Exception as e:
+#                 await _handle_error(ctx, e)
 
 
 @bot.listen(hikari.StoppingEvent)
 async def on_disconnect(event: hikari.StoppingEvent):
     # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
-    await bot.mysql.close()
+    try:
+        await bot.mysql.close()
+    except Exception as e:
+        print(e)
 
     # channel = await bot.rest.fetch_channel(720392697793216642)
     # await channel.send("RIP <@424213584659218445>", user_mentions=False)
@@ -146,6 +147,9 @@ async def on_connect(event: hikari.StartedEvent):
                                       db=os.environ["DB"])
 
     bot.mysql = Database(pool)
+
+    miru.load(bot)
+    tasks.load(bot)
 
     # load them cogs
     [
