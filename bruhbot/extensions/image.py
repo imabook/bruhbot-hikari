@@ -397,7 +397,7 @@ async def blur(ctx: lightbulb.Context):
     byte_array = _img_to_bytes(img)
 
     await ctx.respond(random.choice([
-        "toma, lo necesitas 🤏👓", "que va, si yo veo bien", "no se enfoca",
+        "toma, lo necesitas 🤏👓", "\"que va, si yo veo bien\"", "no se enfoca",
         "joder macho cada día veo menos 😔"
     ]),
                       attachment=byte_array)

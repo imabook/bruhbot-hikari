@@ -435,11 +435,11 @@ async def level(ctx: lightbulb.Context):
     max = get_max_xp(lvl)
 
     # uncomment this out when you implement top.gg
-    # view = miru.View(timeout=0)
-    # view.add_item(
-    #     miru.Button(style=hikari.ButtonStyle.LINK,
-    #                 label="Vota y consigue 15% más de xp",
-    #                 url="https://top.gg/bot/693163993841270876/vote"))
+    view = miru.View(timeout=0)
+    view.add_item(
+        miru.Button(style=hikari.ButtonStyle.LINK,
+                    label="Vota y consigue 15% más de xp",
+                    url="https://top.gg/bot/693163993841270876/vote"))
 
     await ctx.respond(
         f"{member.mention} es nivel **{lvl}**\n{xp}/{max} necesita **{max - xp}** de xp para subir de nivel"
@@ -581,13 +581,13 @@ async def use(ctx: lightbulb.Context):
         await ctx.respond("no tienes ningún item")
 
 
-@plugin.command
-@lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
-@lightbulb.command("items", "Muestra las ids de los items")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def items(ctx: lightbulb.Context):
-    await ctx.respond(
-        "1: cartera\n2: abuela de bolsillo\n3:iglesia de bolsillo\n4:campana")
+# @plugin.command
+# @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
+# @lightbulb.command("items", "Muestra las ids de los items")
+# @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+# async def items(ctx: lightbulb.Context):
+#     await ctx.respond(
+#         "1: cartera\n2: abuela de bolsillo\n3:iglesia de bolsillo\n4:campana")
 
 
 @plugin.command

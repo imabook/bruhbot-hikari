@@ -85,6 +85,10 @@ def build_command_embed(ctx: lightbulb.Context, cmd: lightbulb.CommandLike):
 
         option_info = '\n=== Información de sus opciones ===\n' + option_info
 
+    id = 693163993841270876
+    if ctx.bot.get_me():
+        id = ctx.bot.get_me().id
+
     embed = BetterEmbed(
         title=cmd.name.capitalize(),
         description=f"""```asciidoc
@@ -94,8 +98,7 @@ def build_command_embed(ctx: lightbulb.Context, cmd: lightbulb.CommandLike):
 Uso: {ctx.prefix}{cmd.signature}
 {option_info if options else ''}
 ```""",
-        color=ctx.get_guild().get_member(
-            ctx.app.get_me().id).get_top_role().color,
+        color=ctx.get_guild().get_member(id).get_top_role().color,
         timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
     return embed
