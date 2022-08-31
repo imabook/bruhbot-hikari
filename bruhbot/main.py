@@ -26,12 +26,12 @@ def prefix(app: BruhApp, message: hikari.Message):
     if message.author and message.author.id in [
             424213584659218445, 436521909144911874, 506565592757698600
     ]:
-        return ["", "test "]
+        return ["", "bruh "]
 
-    return "test"
+    return "bruh"
 
 
-bot = BruhApp(token=os.environ["TEST_TOKEN"],
+bot = BruhApp(token=os.environ["BRUH_TOKEN"],
               intents=intents,
               prefix=prefix,
               owner_ids=[424213584659218445, 436521909144911874],
