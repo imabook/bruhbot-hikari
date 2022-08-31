@@ -8,7 +8,7 @@ from core.embed import BetterEmbed
 plugin = lightbulb.Plugin("Ayuda")
 
 
-def build_pages(ctx: lightbulb.Context):
+async def build_pages(ctx: lightbulb.Context):
 
     embeds = []
 
@@ -24,7 +24,7 @@ def build_pages(ctx: lightbulb.Context):
             title=name,
             description=
             f"Para más información sobre estos comandos puedes hacer {ctx.prefix}help [comando] o visitar la [página web](https://mefolloatumadre.tk) del bot",
-            color=ctx.get_guild().get_member(id).get_top_role().color,
+            color=await ctx.bot.rest.fetch_user(id).get_top_role().color,
             timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
         commands = []
@@ -69,7 +69,8 @@ def build_pages(ctx: lightbulb.Context):
     return embeds
 
 
-def build_command_embed(ctx: lightbulb.Context, cmd: lightbulb.CommandLike):
+async def build_command_embed(ctx: lightbulb.Context,
+                              cmd: lightbulb.CommandLike):
 
     aliases = ""
     if cmd.aliases:
@@ -101,7 +102,7 @@ def build_command_embed(ctx: lightbulb.Context, cmd: lightbulb.CommandLike):
 Uso: {ctx.prefix}{cmd.signature}
 {option_info if options else ''}
 ```""",
-        color=ctx.get_guild().get_member(id).get_top_role().color,
+        color=await ctx.bot.rest.fetch_user(id).get_top_role().color,
         timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
     return embed
@@ -121,7 +122,8 @@ async def help_cmd(ctx: lightbulb.Context):
 
     if comando:
         if comando := ctx.bot.get_slash_command(comando):
-            return await ctx.respond(embed=build_command_embed(ctx, comando))
+            return await ctx.respond(
+                embed=await build_command_embed(ctx, comando))
 
     id = 693163993841270876
     if ctx.bot.get_me():
@@ -132,7 +134,7 @@ async def help_cmd(ctx: lightbulb.Context):
         title="Ayuda del bot",
         description=
         f"Para más información sobre los comandos puedes hacer {ctx.prefix}help [comando] o visitar la [página web](http://mefolloatumadre.tk/) del bot",
-        color=ctx.get_guild().get_member(id).get_top_role().color,
+        color=await ctx.bot.rest.fetch_user(id).get_top_role().color,
         timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
     embed.add_field(
@@ -153,7 +155,7 @@ Estos son los comandos con los que puedes hacer/editar fotos.
 Estos son el resto de comandos, no tienen nada en común y tampoco son tan interesanes.
 ```""")
 
-    pages = [embed] + build_pages(ctx)
+    pages = [embed] + await build_pages(ctx)
 
     navigator = nav.ButtonNavigator(pages)
     await navigator.run(ctx)
