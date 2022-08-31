@@ -13,7 +13,7 @@ def build_pages(ctx: lightbulb.Context):
     embeds = []
 
     for name, plugin in ctx.bot.plugins.items():
-        if name == "Ayuda":
+        if name == "Ayuda" or name == "Libro":
             continue
 
         embed = BetterEmbed(
@@ -41,11 +41,14 @@ def build_pages(ctx: lightbulb.Context):
             # estoy completamente lucido, son la 1am y no tengo ni idea de como he hecho/estoy haciendo esto
             # pero me hace sentir bastente 🧠
 
+            # 2 months later im back trying to debug this bullshit cause it skips a command i hate myself
+            # it wasnt that bad 😊
+
             o = len(divisions[-1]) if divisions else 0
             j = commands_str[i:1010 + i].count(
                 "\n") + o if commands_str[i:1010 +
                                           i].count("\n") + o != 0 else 1
-            k = j if j < len(commands) else len(commands)
+            k = j + 1 if j + 1 < len(commands) else len(commands)
 
             divisions.append(commands[o:k])
 

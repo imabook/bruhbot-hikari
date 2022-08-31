@@ -105,15 +105,15 @@ async def color(ctx: lightbulb.Context):
         color = hex(random.randint(0x000000, 0xFFFFFF)).replace("0x", "")
     elif color.startswith("0x"):
         if len(color) > 8:
-            await ctx.respond("te pasas bro :flushed:", delete_after=5)
+            await ctx.respond("te pasas bro 😳", delete_after=5)
             return
     elif color.startswith("#"):
         if len(color) > 7:
-            await ctx.respond("te pasas bro :flushed:", delete_after=5)
+            await ctx.respond("te pasas bro 😳", delete_after=5)
             return
     else:
         if len(color) > 6:
-            await ctx.respond("te pasas bro :flushed:", delete_after=5)
+            await ctx.respond("te pasas bro 😳", delete_after=5)
             return
 
     if type(color) == str:
@@ -123,8 +123,8 @@ async def color(ctx: lightbulb.Context):
             color = hex(int(color, 16)).replace("0x", "")
         except Exception:
             await ctx.respond(
-                f"loco el código `{color}` no esta bien escrito :flushed: si quieres ver como se pondrian los colorcodes checkea esta página <https://htmlcolorcodes.com/> :sunglasses: ",
-                delete_after=7)
+                f"loco el código `{color}` no esta bien escrito 😳 si quieres ver como se pondrian los colorcodes checkea esta página <https://htmlcolorcodes.com/> :sunglasses: ",
+                delete_after=10)
             return
 
     color_hex = color

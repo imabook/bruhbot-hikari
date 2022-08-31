@@ -1,13 +1,18 @@
 import hikari
 from hikari import Intents
 import lightbulb
+import miru
+
+from lightbulb.ext import tasks
 
 import os
 import datetime
 from dotenv import load_dotenv
 from contextlib import suppress
+import aiomysql
 
 import random
+from utils.database import Database
 
 from core.bot import BruhApp
 
@@ -32,6 +37,8 @@ bot = BruhApp(token=os.environ["TEST_TOKEN"],
               owner_ids=[424213584659218445, 436521909144911874],
               case_insensitive_prefix_commands=True,
               help_class=None)
+miru.load(bot)
+tasks.load(bot)
 
 
 @bot.command
@@ -92,7 +99,7 @@ async def reload(ctx: lightbulb.Context):
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{(e)}\n```")
 
 
-@bot.listen(event_type=hikari.MessageUpdateEvent)
+@bot.listen(hikari.MessageUpdateEvent)
 async def on_edit(event: hikari.MessageUpdateEvent):
 
     # me cago en dios que chorizal
@@ -120,15 +127,26 @@ async def on_edit(event: hikari.MessageUpdateEvent):
                 await _handle_error(ctx, e)
 
 
-@bot.listen(event_type=hikari.StoppingEvent)
+@bot.listen(hikari.StoppingEvent)
 async def on_disconnect(event: hikari.StoppingEvent):
     # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
-    channel = await bot.rest.fetch_channel(720392697793216642)
-    await channel.send("RIP <@424213584659218445>", user_mentions=False)
+    await bot.mysql.close()
+
+    # channel = await bot.rest.fetch_channel(720392697793216642)
+    # await channel.send("RIP <@424213584659218445>", user_mentions=False)
 
 
-@bot.listen(event_type=hikari.StartedEvent)
+@bot.listen(hikari.StartedEvent)
 async def on_connect(event: hikari.StartedEvent):
+    # load them database connection
+    pool = await aiomysql.create_pool(host=os.environ["HOST"],
+                                      port=int(os.environ["PORT"]),
+                                      user=os.environ["USER"],
+                                      password=os.environ["PASSWORD"],
+                                      db=os.environ["DB"])
+
+    bot.mysql = Database(pool)
+
     # load them cogs
     [
         bot.load_extensions(f"extensions.{i[:-3]}")
@@ -157,7 +175,7 @@ async def _handle_error(ctx, exception):
     if isinstance(exception, lightbulb.CommandIsOnCooldown):
         return await ctx.respond(
             f"loco esperate unos `{exception.retry_after:.2f}` segundos, vale?",
-            delete_afte=10)
+            delete_after=10)
 
     if isinstance(exception, lightbulb.CommandNotFound):
         return

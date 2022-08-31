@@ -19,5 +19,8 @@ class BetterEmbed(hikari.Embed):
                 "2013 va a ser mi año 📦", "que haces 💀", "npc? 📸",
                 "checkea chepa 🐒", "no publico mis logros porque no tengo 🧐",
                 "texto ejemplo", "willy no quiero tu golem en serio 😪",
-                "i love lean 💜"
+                "i love lean 💜", "me gusta este pez 🐟", "cachimbacraft? 😇",
+                "lo hize yo", "HELP ME 冰冷是個笑話",
+                f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}",
+                "yo y los tirando facts cuando:"
             ]))
