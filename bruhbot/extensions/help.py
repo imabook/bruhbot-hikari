@@ -24,7 +24,7 @@ async def build_pages(ctx: lightbulb.Context):
             title=name,
             description=
             f"Para más información sobre estos comandos puedes hacer {ctx.prefix}help [comando] o visitar la [página web](https://mefolloatumadre.tk) del bot",
-            color=await ctx.bot.rest.fetch_user(id).get_top_role().color,
+            color=(await ctx.bot.rest.fetch_user(id)).get_top_role().color,
             timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
         commands = []
@@ -102,7 +102,7 @@ async def build_command_embed(ctx: lightbulb.Context,
 Uso: {ctx.prefix}{cmd.signature}
 {option_info if options else ''}
 ```""",
-        color=await ctx.bot.rest.fetch_user(id).get_top_role().color,
+        color=(await ctx.bot.rest.fetch_user(id)).get_top_role().color,
         timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
     return embed
@@ -134,7 +134,7 @@ async def help_cmd(ctx: lightbulb.Context):
         title="Ayuda del bot",
         description=
         f"Para más información sobre los comandos puedes hacer {ctx.prefix}help [comando] o visitar la [página web](http://mefolloatumadre.tk/) del bot",
-        color=await ctx.bot.rest.fetch_user(id).get_top_role().color,
+        color=(await ctx.bot.rest.fetch_user(id)).get_top_role().color,
         timestamp=datetime.datetime.now(tz=datetime.timezone.utc))
 
     embed.add_field(
