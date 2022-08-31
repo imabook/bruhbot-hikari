@@ -31,12 +31,16 @@ def prefix(app: BruhApp, message: hikari.Message):
     return "bruh"
 
 
-bot = BruhApp(token=os.environ["BRUH_TOKEN"],
-              intents=intents,
-              prefix=prefix,
-              owner_ids=[424213584659218445, 436521909144911874],
-              case_insensitive_prefix_commands=True,
-              help_class=None)
+bot = BruhApp(
+    token=os.environ["BRUH_TOKEN"],
+    intents=intents,
+    prefix=prefix,
+    owner_ids=[424213584659218445, 436521909144911874],
+    case_insensitive_prefix_commands=True,
+    help_class=None,
+    cache_settings=hikari.impl.CacheSettings(
+        components=hikari.api.CacheComponents.GUILDS),
+)
 
 
 @bot.command
