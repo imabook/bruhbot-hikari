@@ -90,7 +90,7 @@ def get_max_xp(i: int) -> int:
 @plugin.command
 @lightbulb.add_cooldown(callback=callback)
 @lightbulb.command("pray", "Reza para conseguir praycoins", aliases=["p"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def pray(ctx: lightbulb.Context):
 
     new_user = False
@@ -151,7 +151,7 @@ async def pray(ctx: lightbulb.Context):
 @lightbulb.command("pinfo",
                    "Te muestra información sobre religiones",
                    aliases=["prayinfo"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def pinfo(ctx: lightbulb.Context):
     member = ctx.options.miembro or ctx.member
 
@@ -196,7 +196,7 @@ async def pinfo(ctx: lightbulb.Context):
                   type=int,
                   required=True)
 @lightbulb.command("give", "Das monedas a la persona que quieras")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def give(ctx: lightbulb.Context):
     if ctx.options.miembro.is_bot:
         await ctx.respond(
@@ -271,7 +271,7 @@ async def give(ctx: lightbulb.Context):
     required=False,
 )
 @lightbulb.command("religion", "Cambias el nombre a tu religión")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def religion(ctx: lightbulb.Context):
     religion = await fetch_religion(ctx.bot.mysql, ctx.member.id)
 
@@ -327,7 +327,7 @@ async def religion(ctx: lightbulb.Context):
     required=False,
 )
 @lightbulb.command("ranks", "Te muestra un ranking de las mejores religiones")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def ranks(ctx: lightbulb.Context):
 
     changes = {
@@ -417,7 +417,7 @@ async def ranks(ctx: lightbulb.Context):
 @lightbulb.command("level",
                    "Te muestra tu nivel o el de otros",
                    aliases=["lvl"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def level(ctx: lightbulb.Context):
     member = ctx.options.miembro or ctx.member
 
@@ -445,14 +445,14 @@ async def level(ctx: lightbulb.Context):
         f"{member.mention} es nivel **{lvl}**\n{xp}/{max} necesita **{max - xp}** de xp para subir de nivel"
         if ctx.options.miembro else
         f"eres nivel **{lvl}**\n**{xp}/{max}** necesitas **{max - xp}** de xp para subir de nivel",
-        user_mentions=False)
-    # components=view.build())
+        user_mentions=False,
+        components=view.build())
 
 
 @plugin.command
 @lightbulb.add_cooldown(length=10, uses=1, bucket=lightbulb.UserBucket)
 @lightbulb.command("shop", "Te muestra la tienda", aliases=["tienda"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def shop(ctx: lightbulb.Context):
     if not await validate_user(ctx.bot.mysql, ctx.author.id):
         await ctx.respond(
@@ -488,7 +488,7 @@ async def shop(ctx: lightbulb.Context):
 @plugin.command
 @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
 @lightbulb.command("buy", "Compras el objeto que quieras de la tienda")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def buy(ctx: lightbulb.Context):
     if not await validate_user(ctx.bot.mysql, ctx.author.id):
         await ctx.respond(
@@ -531,7 +531,7 @@ async def buy(ctx: lightbulb.Context):
 @plugin.command
 @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
 @lightbulb.command("daily", "Reclama recompensas diarias")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def daily(ctx: lightbulb.Context):
     if not await validate_user(ctx.bot.mysql, ctx.author.id):
         await ctx.respond("si quieres hacer este comando, reza primero anda",
@@ -573,7 +573,7 @@ async def daily(ctx: lightbulb.Context):
 @plugin.command
 @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
 @lightbulb.command("use", "Usa un item que tengas")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def use(ctx: lightbulb.Context):
     items = await fetch_user_items(ctx.bot.mysql, ctx.author.id)
 
@@ -584,7 +584,8 @@ async def use(ctx: lightbulb.Context):
 # @plugin.command
 # @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
 # @lightbulb.command("items", "Muestra las ids de los items")
-# @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+# @lightbulb.implements(lightbulb.SlashCommand)
+
 # async def items(ctx: lightbulb.Context):
 #     await ctx.respond(
 #         "1: cartera\n2: abuela de bolsillo\n3:iglesia de bolsillo\n4:campana")
@@ -597,7 +598,7 @@ async def use(ctx: lightbulb.Context):
                   type=str,
                   required=True)
 @lightbulb.command("gamble", "Reclama recompensas diarias")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def gamble(ctx: lightbulb.Context):
     coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
 
@@ -653,7 +654,8 @@ async def gamble(ctx: lightbulb.Context):
 # @plugin.command
 # @lightbulb.add_cooldown(length=300, uses=1, bucket=lightbulb.UserBucket)
 # @lightbulb.command("desafio", "Reclama recompensas diarias")
-# @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+# @lightbulb.implements(lightbulb.SlashCommand)
+
 # async def desafio(ctx: lightbulb.Context):
 #     lvl = await fetch_level_only(ctx.bot.mysql, ctx.author.id)
 
@@ -708,6 +710,8 @@ async def check_for_hour():
     # runs every minute checking if its xx:00
     # if it is itll start the hourly praycoin task
     # and stop this task
+
+    print(datetime.now())
 
     if datetime.now().minute == 0 and not hourly_praycoin_update.is_running:
         hourly_praycoin_update.start()

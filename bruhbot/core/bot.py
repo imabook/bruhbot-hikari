@@ -27,14 +27,14 @@ class BruhApp(lightbulb.BotApp):
             async with session.get("https://some-random-api.ml/bottoken") as r:
                 return (await r.json())["token"]
 
-    async def get_prefix_context(self,
-                                 event: hikari.MessageCreateEvent,
-                                 cls=None):
-        if not cls:
-            ctx = await super().get_prefix_context(event=event,
-                                                   cls=BetterContext)
-        else:
-            ctx = await super().get_prefix_context(event=event,
-                                                   cls=lightbulb.PrefixContext)
+    # async def get_prefix_context(self,
+    #                              event: hikari.MessageCreateEvent,
+    #                              cls=None):
+    #     if not cls:
+    #         ctx = await super().get_prefix_context(event=event,
+    #                                                cls=BetterContext)
+    #     else:
+    #         ctx = await super().get_prefix_context(event=event,
+    #                                                cls=lightbulb.PrefixContext)
 
-        return ctx
+    #     return ctx

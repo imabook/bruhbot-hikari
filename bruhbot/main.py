@@ -34,9 +34,9 @@ def prefix(app: BruhApp, message: hikari.Message):
 bot = BruhApp(
     token=os.environ["BRUH_TOKEN"],
     intents=intents,
-    prefix=prefix,
+    # prefix=prefix,
     owner_ids=[424213584659218445, 436521909144911874],
-    case_insensitive_prefix_commands=True,
+    # case_insensitive_prefix_commands=True,
     help_class=None,
     cache_settings=hikari.impl.CacheSettings(
         components=hikari.api.CacheComponents.GUILDS),
@@ -53,7 +53,7 @@ bot = BruhApp(
     ],
 )
 @lightbulb.command("load", "Carga el plugin especificado", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def load(ctx):
     if not ctx.options.plugin:
         return await ctx.respond("pero dime que plugin cargar no?")
@@ -74,7 +74,7 @@ async def load(ctx):
                       for e in bot.extensions
                   ])
 @lightbulb.command("unload", "Elimina el plugin especificado", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def unload(ctx):
     if not ctx.options.plugin:
         return await ctx.respond("pero dime que plugin eliminar no?")
@@ -89,7 +89,7 @@ async def unload(ctx):
 @bot.command
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("reload", "Recarga todos los plugins", hidden=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def reload(ctx: lightbulb.Context):
     try:
         [

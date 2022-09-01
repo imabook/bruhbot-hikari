@@ -121,7 +121,7 @@ Uso: {ctx.prefix}{cmd.signature}
     "help",
     "Muestra la ayuda del bot",
 )
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def help_cmd(ctx: lightbulb.Context):
     comando = ctx.options.comando
 

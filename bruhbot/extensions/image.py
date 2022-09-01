@@ -47,7 +47,7 @@ def _blend(avatar, image, opacity=70):
 
 @plugin.command
 @lightbulb.command("persona", "Manda una foto de una persona que no existe")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def persona(ctx: lightbulb.Context):
 
     img = await _fetch(ctx, "https://thispersondoesnotexist.com/image")
@@ -63,7 +63,7 @@ async def persona(ctx: lightbulb.Context):
 @lightbulb.command("gato",
                    "Manda una foto de un gato que no existe",
                    aliases=["cat"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def gato(ctx: lightbulb.Context):
 
     img = await _fetch(ctx, "https://thiscatdoesnotexist.com")
@@ -72,7 +72,7 @@ async def gato(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.command("cuadro", "Manda una foto de un cuadro que no existe")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def cuadro(ctx: lightbulb.Context):
 
     img = await _fetch(ctx, "https://thisartworkdoesnotexist.com")
@@ -81,7 +81,7 @@ async def cuadro(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.command("waifu", "Manda una foto de una waifu 😳 que no existe")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def waifu(ctx: lightbulb.Context):
 
     embed = BetterEmbed(title="aqui tienes una waifu 😳 NO real").set_image(
@@ -96,7 +96,7 @@ async def waifu(ctx: lightbulb.Context):
 @lightbulb.command("color",
                    "Te manda el color a partir de su hexcode",
                    aliases=["colorcode"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def color(ctx: lightbulb.Context):
     # metodo un poco peruano
     color = ctx.options.codigo
@@ -158,7 +158,7 @@ async def color(ctx: lightbulb.Context):
                   modifier=lightbulb.commands.OptionModifier.CONSUME_REST,
                   required=True)
 @lightbulb.command("qr", "Crea un QR con el texto que tu quieras")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def qr(ctx: lightbulb.Context):
 
     img = await _fetch(
@@ -181,7 +181,7 @@ async def qr(ctx: lightbulb.Context):
     required=False,
 )
 @lightbulb.command("avatar", "Muestra el avatar de un usuario")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def avatar(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
@@ -216,7 +216,7 @@ async def avatar(ctx: lightbulb.Context):
 )
 @lightbulb.command("invert",
                    "Invierte los colores de la foto de perfil de alguien")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def invert(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
@@ -244,7 +244,7 @@ async def invert(ctx: lightbulb.Context):
 @lightbulb.command("español",
                    "Dice como de española es una persona",
                    aliases=["españa"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def spanish(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
@@ -280,7 +280,7 @@ async def spanish(ctx: lightbulb.Context):
     required=False,
 )
 @lightbulb.command("gay", "Dice como de gay es una persona")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def gay(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
@@ -317,7 +317,7 @@ async def gay(ctx: lightbulb.Context):
 @lightbulb.command("comunista",
                    "Dice como de comunista es una persona",
                    aliases=["comunismo"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def communism(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
@@ -353,7 +353,7 @@ async def communism(ctx: lightbulb.Context):
     required=False,
 )
 @lightbulb.command("pixelar", "Pixela a una persona", aliases=["censurar"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def pixelar(ctx: lightbulb.Context):
 
     member = ctx.options.member or ctx.member
@@ -383,7 +383,7 @@ async def pixelar(ctx: lightbulb.Context):
     required=False,
 )
 @lightbulb.command("blur", "Difumina a una persona")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def blur(ctx: lightbulb.Context):
     member = ctx.options.member or ctx.member
 
@@ -411,7 +411,7 @@ async def blur(ctx: lightbulb.Context):
     required=True,
 )
 @lightbulb.command("sign", "Escribe texto en un cartel", aliases=["cartel"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def sign(ctx: lightbulb.Context):
     text = ctx.options.text
 

@@ -15,7 +15,7 @@ plugin = lightbulb.Plugin("Libro")
                   modifier=lightbulb.OptionModifier.CONSUME_REST,
                   required=False)
 @lightbulb.command("execute", "Ejecuta sql")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def execute(ctx: lightbulb.Context):
     response = await ctx.bot.mysql.execute(ctx.options.sql)
     await ctx.respond(response)
@@ -28,7 +28,7 @@ async def execute(ctx: lightbulb.Context):
                   modifier=lightbulb.OptionModifier.CONSUME_REST,
                   required=False)
 @lightbulb.command("fetch", "Ejecuta sql")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def fetch(ctx: lightbulb.Context):
     response = await ctx.bot.mysql.fetch(ctx.options.sql)
     await ctx.respond("\n".join([str(r) for r in response]))
@@ -41,7 +41,7 @@ async def fetch(ctx: lightbulb.Context):
                   modifier=lightbulb.OptionModifier.CONSUME_REST,
                   required=False)
 @lightbulb.command("eval", "Ejecuta código")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def _eval(ctx: lightbulb.Context):
 
     await ctx.respond("...")
@@ -50,7 +50,7 @@ async def _eval(ctx: lightbulb.Context):
 @plugin.command
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("test", "testing command")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def test(ctx: lightbulb.Context):
     # a = "abuelas"
     # b = "economy"
