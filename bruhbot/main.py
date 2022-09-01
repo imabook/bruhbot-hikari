@@ -41,6 +41,8 @@ bot = BruhApp(
     cache_settings=hikari.impl.CacheSettings(
         components=hikari.api.CacheComponents.GUILDS),
 )
+miru.load(bot)
+tasks.load(bot)
 
 
 @bot.command
@@ -151,9 +153,6 @@ async def on_connect(event: hikari.StartedEvent):
                                       db=os.environ["DB"])
 
     bot.mysql = Database(pool)
-
-    miru.load(bot)
-    tasks.load(bot)
 
     # load them cogs
     [
