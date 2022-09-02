@@ -225,11 +225,12 @@ async def on_member_join(event: hikari.MemberCreateEvent):
 
         await event.app.rest.create_message(
             channel=761970663840940073,
-            content=random.choice[
+            content=random.choice([
                 f"muy buenas {event.member.mention} 🐠",
                 f"se unió un ludópata, bienvenido {event.member.mention}",
                 f"{event.member.mention}, este chaval fuma seguro 😇🚬",
-                f"{event.member.mention} es un real más"],
+                f"{event.member.mention} es un real más"
+            ]),
             user_mentions=False)
 
 
