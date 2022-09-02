@@ -14,6 +14,7 @@ import aiomysql
 import random
 from utils.database import Database
 
+from core.embed import BetterEmbed
 from core.bot import BruhApp
 
 load_dotenv()
@@ -150,7 +151,8 @@ async def on_connect(event: hikari.StartedEvent):
                                       port=int(os.environ["PORT"]),
                                       user=os.environ["USER"],
                                       password=os.environ["PASSWORD"],
-                                      db=os.environ["DB"])
+                                      db=os.environ["DB"],
+                                      autocommit=True)
 
     bot.mysql = Database(pool)
 
@@ -159,6 +161,76 @@ async def on_connect(event: hikari.StartedEvent):
         bot.load_extensions(f"extensions.{i[:-3]}")
         for i in os.listdir("./bruhbot/extensions/") if i.endswith(".py")
     ]
+
+
+@bot.listen(hikari.GuildJoinEvent)
+async def on_guild_join(event: hikari.GuildJoinEvent):
+
+    embed = BetterEmbed(
+        title="Ehh pero bueno, muchas gracias por invitarme 😳",
+        description="Aquí tienes alguna información sobre mí 😎",
+        color=0x5755d6
+    ).add_field(
+        name="Para empezar:",
+        value=
+        "Para ver la lista de comandos solo haz `/help`\nSi quieres rezar y todo eso haz `/pray`"
+    ).add_field(
+        name="Otras cosas:",
+        value=
+        "Si tienes algunos problemas con comandos, o tienes sugerencias para que este bot no sea tan mierda, únete al [server](https://discord.gg/qB7p97H) del bot"
+    )
+
+    fetch_channels = [
+        c for c in await event.app.rest.fetch_guild_channels(event.guild_id)
+        if c.type == 0
+    ]
+
+    channels = [
+        c for c in fetch_channels if c.name in ["bot", "commands", "comandos"]
+    ]
+
+    if channels:
+        for channel in channels:
+            try:
+                await channel.send(embed=embed)
+                return
+            except Exception:
+                pass
+
+    channels = [
+        c for c in fetch_channels
+        if c.name in ["general", "chill", "vibe", "chat", "lobby", "main"]
+    ]
+
+    if channels:
+        for channel in channels:
+            try:
+                await channel.send(embed=embed)
+                return
+            except Exception:
+                pass
+
+    for channel in fetch_channels:
+        try:
+            await channel.send(embed=embed)
+            return
+        except Exception:
+            pass
+
+
+@bot.listen(hikari.MemberCreateEvent)
+async def on_member_join(event: hikari.MemberCreateEvent):
+    if event.guild_id == 707958627377348719:
+        await event.member.add_role(784532927446384720)
+
+        await event.app.rest.create_message(
+            channel=761970663840940073,
+            content=random.choice[
+                f"muy buenas {event.member.mention} 🐠",
+                f"se unió un ludópata, bienvenido {event.member.mention}",
+                f"{event.member.mention}, este chaval fuma seguro 😇🚬",
+                f"{event.member.mention} es un real más"],
+            user_mentions=False)
 
 
 @bot.listen(lightbulb.CommandErrorEvent)

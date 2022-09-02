@@ -16,7 +16,7 @@ class Database():
         async with self.__pool.acquire() as conn:
             c = await conn.cursor()
             response = await c.execute(*args, **kwargs)
-            await conn.commit()
+            # await conn.commit()
 
             return response
 

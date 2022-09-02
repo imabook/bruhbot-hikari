@@ -423,7 +423,7 @@ async def level(ctx: lightbulb.Context):
 
     if not await validate_user(ctx.bot.mysql, member.id):
         await ctx.respond(
-            f"loco, por qué quieres ver el nivel de {member.metion} si se ve que no ha rezado nunca?"
+            f"loco, por qué quieres ver el nivel de {member.mention} si se ve que no ha rezado nunca?"
             if ctx.options.miembro else
             "si quieres ver tu nivel y tal, reza primero anda",
             delete_after=10,
@@ -597,7 +597,7 @@ async def use(ctx: lightbulb.Context):
                   "La cantidad de dinero que quieres apostar",
                   type=str,
                   required=True)
-@lightbulb.command("gamble", "Reclama recompensas diarias")
+@lightbulb.command("gamble", "Apuesta dinero y reza para no perderlo")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def gamble(ctx: lightbulb.Context):
     coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
