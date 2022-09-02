@@ -1,0 +1,36 @@
+{
+    "es": {
+        "events": {
+            "join": {
+                "embed": {
+                    "title": "Ehh pero bueno, muchas gracias por invitarme 😳",
+                    "description": "Aquí tienes alguna información sobre mí 😎",
+                    "field1": {
+                        "name": "Para empezar:",
+                        "value": "Para ver la lista de comandos solo haz `/help`\nSi quieres rezar y todo eso haz `/pray`"
+                    },
+                    "field2": {
+                        "name": "Otras cosas:",
+                        "value": "Si tienes algunos problemas con comandos, o tienes sugerencias para que este bot no sea tan mierda, únete al [server](https://discord.gg/qB7p97H) del bot"
+                    }
+                }
+            }
+        },
+        "commands": {
+
+        },
+        "errors": {
+            "notOwner": ["que haces goofi, no eres el libro", "que pesado, tu no puedes usar este comando", "tonto"],
+            "cooldown": "loco esperate unos `{exception.retry_after:.2f}` segundos, vale?",
+            "noArgs": {
+                "random": ["espera", "goofi", "ehh", "escucha,"],
+                "text":  "te faltan argumentos 🗣️ xd\n>>> ```asciidoc\n{formatted_args}```"
+            }
+        }
+    },
+
+
+    "en": {
+
+    }
+}
