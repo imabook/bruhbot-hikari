@@ -176,7 +176,7 @@ class SelectAmountButton(miru.Select):
 
 class YesButton(miru.Button):
 
-    def __init__(self, count: int, amount: int, price: int, item: str, object: str, row: int) -> None:
+    def __init__(self, count: int, amount: int, price: int, item: str, object: str, row: int = 2) -> None:
         self.amount = amount + count
 
         self.count = count # for the bonus only
