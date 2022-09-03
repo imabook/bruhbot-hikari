@@ -117,7 +117,7 @@ async def pray(ctx: lightbulb.Context):
             f"buenas {ctx.author.mention}, eres nuevo y tal y probablemente quieras leer todo esto\nah y tu religión no tiene nombre todavía, usa el comando `religion` para ponerle uno",
             embed=BetterEmbed(
                 title="Mira, estos son algunos comandos que puedes usar",
-                color=ctx.member.get_top_role().color).
+                color=(await ctx.member.fetch_roles())[-1].color).
             add_field(
                 name="`pray`",
                 value=
