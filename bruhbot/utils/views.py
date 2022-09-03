@@ -176,7 +176,7 @@ class SelectAmountButton(miru.Select):
 
 class YesButton(miru.Button):
 
-    def __init__(self, count: int, amount: int, price: int, item: str, object: str) -> None:
+    def __init__(self, count: int, amount: int, price: int, item: str, object: str, row: int = 1) -> None:
         self.amount = amount + count
 
         self.count = count # for the bonus only
@@ -189,7 +189,7 @@ class YesButton(miru.Button):
                          label=random.choice([
                              "* comprar *", "toca consumir", "dale, lo compro",
                              "🤑🤑🤑", "venga va va"
-                         ]))
+                         ]), row=row)
 
     async def callback(self, ctx: miru.Context) -> None:
         coins = await fetch_coins(ctx.app.mysql, ctx.user.id)
