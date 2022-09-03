@@ -104,7 +104,7 @@ class SelectObjectButton(miru.Select):
             if coins < price:
                 # if the while results to false means that the cost is too much
                 # thus removing the last price increment here
-                price -= get_price(object_count + 1 + i,  object)
+                price -= get_price(object_count + 1 + i, object)
 
                 break
             
@@ -121,7 +121,7 @@ class SelectObjectButton(miru.Select):
             ctx.view.stop()
             return        
         if amount == 1:
-            ctx.view.add_item(YesButton(object=object, count=object_count, amount=amount, price=price_map[amount], item=self.values[0].lower()))
+            ctx.view.add_item(YesButton(object=object, count=object_count, amount=amount, price=price_map[amount], item=self.values[0].lower(), row=2))
             
             await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{amount} {self.values[0].lower()}** por **{price_map[amount]:,}** <:praycoin:703296200249573387>\nte quedarán **{(coins - price_map[amount]):,}** <:praycoin:703296200249573387> vale?".replace(",", "."), components=self.view.build())
             return
@@ -204,7 +204,7 @@ class YesButton(miru.Button):
         await ctx.edit_response(f"perfecto ya tienes **{self.amount} {self.display_item}** 😇 y ahora cuestan **{get_price(self.amount + 1, self.object):,}** <:praycoin:703296200249573387>".replace(",", "."), components=[])
 
         ctx.view.bought = True
-        ctx.view.bonus =  self.count
+        ctx.view.bonus = self.count
 
         match self.object:
             case "abuelas":

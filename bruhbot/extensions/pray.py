@@ -42,7 +42,9 @@ def get_timestamp(d: datetime) -> int:
 
     # i know all timestamps are the same without minding timezone but it has to work like this, all dates displayed on spain timezone not utc
 
-    return round((d + timedelta(hours=2)).timestamp())
+    # gotta change hours to 0, when the bot is in the server you dont need to add hours for the timestamp to be correct
+
+    return round((d + timedelta(hours=0)).timestamp())
 
 
 def human_format(num):
@@ -542,7 +544,7 @@ async def daily(ctx: lightbulb.Context):
 
     if timeout != 0:
         await ctx.respond(
-            f"no ha pasado un día todavía rey 👿\npodrás hacer el comando en <t:{math.ceil((datetime.utcnow() + timedelta(hours=2, seconds=timeout)).timestamp())}:R>"
+            f"no ha pasado un día todavía rey 👿\npodrás hacer el comando en <t:{math.ceil((datetime.utcnow() + timedelta(hours=0, seconds=timeout)).timestamp())}:R>"
         )
         return
 
