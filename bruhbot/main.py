@@ -232,6 +232,21 @@ async def on_member_join(event: hikari.MemberCreateEvent):
                 f"{event.member.mention} es un real más"
             ]),
             user_mentions=False)
+           
+           
+@bot.listen(hikari.MemberDeleteEvent)
+async def on_member_join(event: hikari.MemberDeleteEvent):
+    if event.guild_id == 707958627377348719:
+
+        await event.app.rest.create_message(
+            channel=761970663840940073,
+            content=random.choice([
+                f"A {event.member.user.username} le dió sueño 💤",
+                f"{event.member.user.username} usa xhampu? Baneado por bobi",
+                f"{event.member.user.username}, este chaval no fuma seguro 👿🚬",
+                f"{event.member.user.username} ha traicionado a la banda"
+            ]),
+            user_mentions=False)
 
 
 @bot.listen(lightbulb.CommandErrorEvent)
