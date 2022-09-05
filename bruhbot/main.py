@@ -235,7 +235,7 @@ async def on_member_join(event: hikari.MemberCreateEvent):
            
            
 @bot.listen(hikari.MemberDeleteEvent)
-async def on_member_join(event: hikari.MemberDeleteEvent):
+async def on_member_leave(event: hikari.MemberDeleteEvent):
     if event.guild_id == 707958627377348719:
 
         await event.app.rest.create_message(
