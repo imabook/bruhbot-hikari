@@ -132,18 +132,6 @@ async def reload(ctx: lightbulb.Context):
 #                 await _handle_error(ctx, e)
 
 
-@bot.listen(hikari.StoppingEvent)
-async def on_disconnect(event: hikari.StoppingEvent):
-    # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
-    try:
-        await bot.mysql.close()
-    except Exception as e:
-        print(e)
-
-    # channel = await bot.rest.fetch_channel(720392697793216642)
-    # await channel.send("RIP <@424213584659218445>", user_mentions=False)
-
-
 @bot.listen(hikari.StartedEvent)
 async def on_connect(event: hikari.StartedEvent):
     # load them database connection
@@ -161,6 +149,20 @@ async def on_connect(event: hikari.StartedEvent):
         bot.load_extensions(f"extensions.{i[:-3]}")
         for i in os.listdir("./bruhbot/extensions/") if i.endswith(".py")
     ]
+
+
+@bot.listen(hikari.StoppingEvent)
+async def on_disconnect(event: hikari.StoppingEvent):
+    # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
+    try:
+        await bot.mysql.close()
+    except Exception as e:
+        print(e)
+
+    await event.app.rest.create_message(717008102175539231,
+                                        "RIP <@424213584659218445>",
+                                        user_mentions=True)
+    # await channel.send()
 
 
 @bot.listen(hikari.GuildJoinEvent)
@@ -225,26 +227,29 @@ async def on_member_join(event: hikari.MemberCreateEvent):
 
         await event.app.rest.create_message(
             channel=761970663840940073,
-            content=random.choice([
+            content="➡️ " + random.choice([
                 f"muy buenas {event.member.mention} 🐠",
                 f"se unió un ludópata, bienvenido {event.member.mention}",
                 f"{event.member.mention}, este chaval fuma seguro 😇🚬",
-                f"{event.member.mention} es un real más"
+                f"{event.member.mention} es un real más",
+                f"que grande eres {event.member.mention}",
+                f"{event.member.mention} se unió a la gang"
             ]),
             user_mentions=False)
-           
-           
+
+
 @bot.listen(hikari.MemberDeleteEvent)
-async def on_member_join(event: hikari.MemberDeleteEvent):
+async def on_member_leave(event: hikari.MemberDeleteEvent):
     if event.guild_id == 707958627377348719:
 
         await event.app.rest.create_message(
             channel=761970663840940073,
-            content=random.choice([
-                f"A {event.member.user.username} le dió sueño 💤",
-                f"{event.member.user.username} usa xhampu? Baneado por bobi",
-                f"{event.member.user.username}, este chaval no fuma seguro 👿🚬",
-                f"{event.member.user.username} ha traicionado a la banda"
+            content="⬅️ " + random.choice([
+                f"a **{event.old_member.username}** le dió sueño 💤",
+                f"**{event.old_member.username}**, este chaval no fuma seguro 👿🚭",
+                f"**{event.old_member.username}** ha traicionado a la banda",
+                f"**{event.old_member.username}** simplemente no le sabe",
+                f"no hay canal nsfw y **{event.old_member.username}** se fué"
             ]),
             user_mentions=False)
 
