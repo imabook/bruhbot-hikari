@@ -189,7 +189,7 @@ async def avatar(ctx: lightbulb.Context):
     color = None
 
     if isinstance(member, hikari.Member):
-        color = member.get_top_role().color
+        color = await member.fetch_roles()[-1].color
 
     embed = BetterEmbed(
         title=f"esta es la foto de perfil de {member.username}", color=color
