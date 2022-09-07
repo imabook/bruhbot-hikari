@@ -5,6 +5,8 @@ import hikari
 import random
 import functools
 
+from core.embed import BetterEmbed
+
 plugin = lightbulb.Plugin("Libro")
 
 
@@ -52,12 +54,8 @@ async def _eval(ctx: lightbulb.Context):
 @lightbulb.command("test", "testing command")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def test(ctx: lightbulb.Context):
-    # a = "abuelas"
-    # b = "economy"
-    # QUERY = f"SELECT {a} FROM {b} WHERE id = %s;"
-    # data = await ctx.bot.mysql.fetchone(QUERY, (ctx.author.id, ))
-    # print(data)
-    ...
+    await ctx.respond(embed=BetterEmbed().add_field(
+        name="bots cards", value="<:2c:1017108232738709556>"))
 
 
 def load(bot):

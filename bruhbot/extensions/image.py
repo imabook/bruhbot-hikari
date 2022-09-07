@@ -257,7 +257,7 @@ async def spanish(ctx: lightbulb.Context):
 
     meter = random.randint(0, 100)
     if meter == 0:
-        text = f"ayy pa, **0%** de español, eres un alto peruano {member.name} 🐒"
+        text = f"ayy pa, **0%** de español, eres un alto peruano {member.username} 🐒"
     elif meter <= 25:
         text = f"es poquito pero eres **{meter}%** español, sigue así 😎"
     elif meter <= 75:
@@ -293,7 +293,7 @@ async def gay(ctx: lightbulb.Context):
 
     meter = random.randint(0, 100)
     if meter == 0:
-        text = f"esto si que es totalmente epico, estoy notando un **0%** de gay, enhorabuena {member.name}"
+        text = f"esto si que es totalmente epico, estoy notando un **0%** de gay, enhorabuena {member.username}"
     elif meter <= 25:
         text = f"es poquito pero te he diagnosticado con el gay, tienes un **{meter}%**"
     elif meter <= 75:

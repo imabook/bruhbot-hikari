@@ -117,13 +117,13 @@ class SelectObjectButton(miru.Select):
         ctx.view.children.pop(0)
 
         if amount == 0:
-            await ctx.edit_response(f"no tienes el dinero suficiente como para comprar **{self.values[0].lower()}** rey 😢\ncuesta **{get_price(object_count + 1 + i, object):,}** <:praycoin:703296200249573387> y tienes **{coins}** <:praycoin:703296200249573387>".replace(',', '.'), components=[])
+            await ctx.edit_response(f"no tienes el dinero suficiente como para comprar **{self.values[0].lower()}** rey 😢\ncuesta **{get_price(object_count + 1 + i, object):,}** <:praycoin:758747635909132387> y tienes **{coins}** <:praycoin:758747635909132387>".replace(',', '.'), components=[])
             ctx.view.stop()
             return        
         if amount == 1:
             ctx.view.add_item(YesButton(object=object, count=object_count, amount=amount, price=price_map[amount], item=self.values[0].lower(), row=2))
             
-            await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{amount} {self.values[0].lower()}** por **{price_map[amount]:,}** <:praycoin:703296200249573387>\nte quedarán **{(coins - price_map[amount]):,}** <:praycoin:703296200249573387> vale?".replace(",", "."), components=self.view.build())
+            await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{amount} {self.values[0].lower()}** por **{price_map[amount]:,}** <:praycoin:758747635909132387>\nte quedarán **{(coins - price_map[amount]):,}** <:praycoin:758747635909132387> vale?".replace(",", "."), components=self.view.build())
             return
 
 
@@ -131,7 +131,7 @@ class SelectObjectButton(miru.Select):
 
         desc = "\n".join([f"{self.values[0]} x {k} -> {price_map[k]:,} praycoins" for k in price_map]).replace(",", ".")
 
-        await ctx.edit_response(f"**{self.values[0].lower()}** ehh?\nen total puedes comprar **{amount} {self.values[0].lower()}** que serían **{price}** <:praycoin:703296200249573387>\n\naquí te dejo otros precios y tal si no quieres comprar el máximo, tienes **{coins}** <:praycoin:703296200249573387>\n>>> ```ml\n{desc}```",
+        await ctx.edit_response(f"**{self.values[0].lower()}** ehh?\nen total puedes comprar **{amount} {self.values[0].lower()}** que serían **{price}** <:praycoin:758747635909132387>\n\naquí te dejo otros precios y tal si no quieres comprar el máximo, tienes **{coins}** <:praycoin:758747635909132387>\n>>> ```ml\n{desc}```",
                                 components=ctx.view.build())
 
 
@@ -164,7 +164,7 @@ class SelectAmountButton(miru.Select):
         ctx.view.add_item(YesButton(object=self.object, count=self.count, amount=i, price=self.map[i], item=self.item))
         ctx.view.children.pop(0)
 
-        await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{i} {self.item}** por **{self.map[i]:,}** <:praycoin:703296200249573387>\nte quedarán **{(self.coins - self.map[i]):,}** <:praycoin:703296200249573387> vale?".replace(",", "."),
+        await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{i} {self.item}** por **{self.map[i]:,}** <:praycoin:758747635909132387>\nte quedarán **{(self.coins - self.map[i]):,}** <:praycoin:758747635909132387> vale?".replace(",", "."),
                                 components=self.view.build())
 
     # def set_amount(self, amount: int) -> None:
@@ -201,7 +201,7 @@ class YesButton(miru.Button):
 
         await buy_object(ctx.app.mysql, ctx.user.id, coins - self.price, self.object, self.amount)
 
-        await ctx.edit_response(f"perfecto ya tienes **{self.amount} {self.display_item}** 😇 y ahora cuestan **{get_price(self.amount + 1, self.object):,}** <:praycoin:703296200249573387>".replace(",", "."), components=[])
+        await ctx.edit_response(f"perfecto ya tienes **{self.amount} {self.display_item}** 😇 y ahora cuestan **{get_price(self.amount + 1, self.object):,}** <:praycoin:758747635909132387>".replace(",", "."), components=[])
 
         ctx.view.bought = True
         ctx.view.bonus = self.count

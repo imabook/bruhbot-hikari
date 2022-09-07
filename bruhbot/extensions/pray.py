@@ -121,15 +121,15 @@ async def pray(ctx: lightbulb.Context):
             add_field(
                 name="`pray`",
                 value=
-                "Rezas y consigues una praycoin <:praycoin:703296200249573387>, al principio solo puedes rezar cada dos minutos"
+                "Rezas y consigues una praycoin <:praycoin:758747635909132387>, al principio solo puedes rezar cada dos minutos"
             ).add_field(
                 name="`pinfo`",
                 value=
-                "Ves cuantas praycoins <:praycoin:703296200249573387> tienes y las cosas que has comprado"
+                "Ves cuantas praycoins <:praycoin:758747635909132387> tienes y las cosas que has comprado"
             ).add_field(
                 name="`shop`",
                 value=
-                "La tienda rey, para ver que puedes comprar con tus praycoins <:praycoin:703296200249573387>"
+                "La tienda rey, para ver que puedes comprar con tus praycoins <:praycoin:758747635909132387>"
             ).add_field(
                 name="Y pues eso",
                 value=
@@ -138,7 +138,9 @@ async def pray(ctx: lightbulb.Context):
         return
 
     await ctx.respond(
-        f"ahora tienes **{coins + 1 + amuletos}** <:praycoin:703296200249573387>, {random.choice(['sigue asi', 'dale', 'durisimo', 'bendecido'])} {random.choice(['🤑', '😎🙏', '😇'])}"
+        f"ahora tienes **{(coins + 1 + amuletos):,}** <:praycoin:758747635909132387>"
+        .replace(",", ".") +
+        f", {random.choice(['sigue asi', 'dale', 'durisimo', 'bendecido'])} {random.choice(['🤑', '😎🙏', '😇'])}"
     )
 
     await handle_xp(ctx, ctx.author.id)
@@ -177,7 +179,7 @@ async def pinfo(ctx: lightbulb.Context):
     ).add_field(
         name="Praycoins:",
         value=
-        f"{member.mention} tiene **{ei[0]}** <:praycoin:703296200249573387>\nHa rezado **{ui[1]}** veces y empezó <t:{get_timestamp(ui[2])}:R> 😨\nConsigue **{pph}** <:praycoin:703296200249573387> por hora 🤑\nHa recibido **{ui[3]}** <:praycoin:703296200249573387> y ha dado **{ui[4]}** <:praycoin:703296200249573387>"
+        f"{member.mention} tiene **{ei[0]}** <:praycoin:758747635909132387>\nHa rezado **{ui[1]}** veces y empezó <t:{get_timestamp(ui[2])}:R> 😨\nConsigue **{pph}** <:praycoin:758747635909132387> por hora 🤑\nHa recibido **{ui[3]}** <:praycoin:758747635909132387> y ha dado **{ui[4]}** <:praycoin:758747635909132387>"
     ).add_field(
         name="Cosas compradas:",
         value=
@@ -216,7 +218,7 @@ async def give(ctx: lightbulb.Context):
 
     if ctx.options.cantidad <= 0:
         await ctx.respond(
-            f"**{ctx.options.cantidad}** <:praycoin:703296200249573387> ehh \nalto gracioso 🗿",
+            f"**{ctx.options.cantidad}** <:praycoin:758747635909132387> ehh \nalto gracioso 🗿",
             delete_after=10)
         return
 
@@ -340,9 +342,9 @@ async def ranks(ctx: lightbulb.Context):
         "nivel": "lvl"
     }
     value_changes = {
-        "praycoins": "<:praycoin:703296200249573387> praycoins 🤑",
-        "donaciones": "<:praycoin:703296200249573387> donadas 😊",
-        "recibidas": "<:praycoin:703296200249573387> recibidas 😇",
+        "praycoins": "<:praycoin:758747635909132387> praycoins 🤑",
+        "donaciones": "<:praycoin:758747635909132387> donadas 😊",
+        "recibidas": "<:praycoin:758747635909132387> recibidas 😇",
         "oraciones": "veces rezadas 🙏",
         "nivel": " niveles"
     }
@@ -466,21 +468,21 @@ async def shop(ctx: lightbulb.Context):
     shop_info = await fetch_shop(ctx.bot.mysql)
     user_shop = await fetch_user_shop(ctx.bot.mysql, ctx.author.id)
 
-    desc = f"**Abuela** -> **{get_price(user_shop[1] + 1, 'abuelas'):,}** <:praycoin:703296200249573387>\nConsigues una moneda por hora\n`hay {shop_info[0]:,} abuelas totales creyendo en diferentes religiones`\n**Iglesia** -> **{get_price(user_shop[2] + 1, 'iglesias'):,}** <:praycoin:703296200249573387>\nTodas las abuelas generan una moneda más por hora\n`se han construido {shop_info[1]:,} iglesias en total`\n**Amuleto religioso** -> **{get_price(user_shop[3] + 1, 'amuletos'):,}** <:praycoin:703296200249573387>\nConsigues una moneda más al rezar y se reduce el tiempo de espera por 5s\n`solo se pueden tener 15 por persona`\n"
+    desc = f"**Abuela** -> **{get_price(user_shop[1] + 1, 'abuelas'):,}** <:praycoin:758747635909132387>\nConsigues una moneda por hora\n`hay {shop_info[0]:,} abuelas totales creyendo en diferentes religiones`\n**Iglesia** -> **{get_price(user_shop[2] + 1, 'iglesias'):,}** <:praycoin:758747635909132387>\nTodas las abuelas generan una moneda más por hora\n`se han construido {shop_info[1]:,} iglesias en total`\n**Amuleto religioso** -> **{get_price(user_shop[3] + 1, 'amuletos'):,}** <:praycoin:758747635909132387>\nConsigues una moneda más al rezar y se reduce el tiempo de espera por 5s\n`solo se pueden tener 15 por persona`\n"
 
     if lvl >= 10:
-        desc += f"**Ángel** -> **{get_price(user_shop[6] + 1, 'angeles'):,}** <:praycoin:703296200249573387>\nCada ángel te da 10.000 monedas cada día y aumenta tus ganancias de xp\n`hay {shop_info[4]:,} ángeles ayudando distintas religiones en total`"
+        desc += f"**Ángel** -> **{get_price(user_shop[6] + 1, 'angeles'):,}** <:praycoin:758747635909132387>\nCada ángel te da 10.000 monedas cada día y aumenta tus ganancias de xp\n`hay {shop_info[4]:,} ángeles ayudando distintas religiones en total`"
 
         if lvl >= 15:
-            desc += f"**Guiri** -> **{get_price(user_shop[4] + 1, 'guiris'):,}** <:praycoin:703296200249573387>\nConsigues 10 monedas por hora\n`hay {shop_info[2]:,} guiris visitando religiones en el mundo`\n"
+            desc += f"**Guiri** -> **{get_price(user_shop[4] + 1, 'guiris'):,}** <:praycoin:758747635909132387>\nConsigues 10 monedas por hora\n`hay {shop_info[2]:,} guiris visitando religiones en el mundo`\n"
 
             if user_shop[4] > 0:
-                desc += f"**Máquina de donaciones** -> **{get_price(user_shop[5] + 1, 'donaciones'):,}** <:praycoin:703296200249573387>\nCada guiri se deja 10 monedas más por cada máquina\n`hay {shop_info[3]:,} máquinas de donaciones totales`"
+                desc += f"**Máquina de donaciones** -> **{get_price(user_shop[5] + 1, 'donaciones'):,}** <:praycoin:758747635909132387>\nCada guiri se deja 10 monedas más por cada máquina\n`hay {shop_info[3]:,} máquinas de donaciones totales`"
 
     embed = BetterEmbed(
         title="Tienda",
         description=
-        f"Para ir desbloqueando nuevas cosas para comprar tendras que subir de nivel\nEres nivel **{lvl}** y tienes **{user_shop[0]}** <:praycoin:703296200249573387>\n\n{desc}"
+        f"Para ir desbloqueando nuevas cosas para comprar tendras que subir de nivel\nEres nivel **{lvl}** y tienes **{user_shop[0]}** <:praycoin:758747635909132387>\n\n{desc}"
         .replace(",", "."),
         color=0x30A8FF)
 
@@ -544,7 +546,7 @@ async def daily(ctx: lightbulb.Context):
 
     if timeout != 0:
         await ctx.respond(
-            f"no ha pasado un día todavía rey 👿\npodrás hacer el comando en <t:{math.ceil((datetime.utcnow() + timedelta(hours=0, seconds=timeout)).timestamp())}:R>"
+            f"no ha pasado un día todavía rey 👿\npodrás hacer el comando <t:{math.ceil((datetime.utcnow() + timedelta(hours=0, seconds=timeout)).timestamp())}:R>"
         )
         return
 
@@ -567,21 +569,20 @@ async def daily(ctx: lightbulb.Context):
     await update_coins_add(ctx.bot.mysql, ctx.author.id, coins)
 
     await ctx.respond(
-        f"nuevo día ehh?, has conseguido **{coins}** <:praycoin:703296200249573387>\na ver si mañana consigues un item"
+        f"nuevo día ehh?, has conseguido **{coins}** <:praycoin:758747635909132387>\na ver si mañana consigues un item"
     )
 
 
 # yes yes i gotta do this right, short quick implementation, gotta change it soon
-@plugin.command
-@lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
-@lightbulb.command("use", "Usa un item que tengas")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def use(ctx: lightbulb.Context):
-    items = await fetch_user_items(ctx.bot.mysql, ctx.author.id)
+# @plugin.command
+# @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
+# @lightbulb.command("use", "Usa un item que tengas")
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def use(ctx: lightbulb.Context):
+#     items = await fetch_user_items(ctx.bot.mysql, ctx.author.id)
 
-    if items == None:
-        await ctx.respond("no tienes ningún item")
-
+#     if items == None:
+#         await ctx.respond("no tienes ningún item")
 
 # @plugin.command
 # @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
@@ -602,6 +603,7 @@ async def use(ctx: lightbulb.Context):
 @lightbulb.command("gamble", "Apuesta dinero y reza para no perderlo")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def gamble(ctx: lightbulb.Context):
+    # checking and stuff
     coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
 
     if coins == None:
@@ -631,12 +633,14 @@ async def gamble(ctx: lightbulb.Context):
         await ctx.respond("real? 😳", delete_after=10)
         return
 
+    # actual code
+
     if random.randint(0, 4) <= 1:
         await update_coins(ctx.bot.mysql, ctx.author.id, coins + amount)
         embed = BetterEmbed(
             title="Has ganado 🤑",
             description=
-            f"Apostaste **{amount:,}** <:praycoin:703296200249573387> y ahora tienes **{(coins + amount):,}** <:praycoin:703296200249573387>"
+            f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins + amount):,}** <:praycoin:758747635909132387>"
             .replace(",", "."),
             color=0x126F3D)
     else:
@@ -644,12 +648,74 @@ async def gamble(ctx: lightbulb.Context):
         embed = BetterEmbed(
             title="Has perdido 😢",
             description=
-            f"Apostaste **{amount:,}** <:praycoin:703296200249573387> y ahora tienes **{(coins - amount):,}** <:praycoin:703296200249573387>"
+            f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins - amount):,}** <:praycoin:758747635909132387>"
             .replace(",", "."),
             color=0xFF0000)
 
     await ctx.respond(embed=embed)
 
+
+# @plugin.command
+# @lightbulb.add_cooldown(length=5, uses=1, bucket=lightbulb.UserBucket)
+# @lightbulb.option("cantidad",
+#                   "La cantidad de dinero que quieres apostar",
+#                   type=str,
+#                   required=True)
+# @lightbulb.command("blackjack",
+#                    "Apuesta dinero y gana al blackjack para no perderlo")
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def gamble(ctx: lightbulb.Context):
+
+#     # checking and stuff
+#     coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
+
+#     if coins == None:
+#         await ctx.respond("si quieres apostar praycoins, reza primero anda",
+#                           delete_after=10)
+#         return
+
+#     if ctx.options.cantidad == "all":
+#         amount = coins
+#     else:
+#         try:
+#             amount = int(ctx.options.cantidad)
+#         except ValueError:
+#             await ctx.respond(
+#                 f"dame un número entero, no \"**{ctx.options.cantidad}**\"",
+#                 user_mentions=False,
+#                 role_mentions=False,
+#                 mentions_everyone=False,
+#                 delete_after=10)
+#             return
+
+#     if amount > coins:
+#         await ctx.respond("estas apostando más de lo que tienes 🤬",
+#                           delete_after=10)
+#         return
+#     elif amount <= 0:
+#         await ctx.respond("real? 😳", delete_after=10)
+#         return
+
+#     # actual code
+
+#     if random.randint(0, 4) <= 1:
+#         await update_coins(ctx.bot.mysql, ctx.author.id, coins + amount)
+#         embed = BetterEmbed(
+#             title="Has ganado 🤑",
+#             description=
+#             f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins + amount):,}** <:praycoin:758747635909132387>"
+#             .replace(",", "."),
+#             color=0x126F3D)
+#     else:
+#         await update_coins(ctx.bot.mysql, ctx.author.id, coins - amount)
+#         embed = BetterEmbed(
+#             title="Has perdido 😢",
+#             description=
+#             f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins - amount):,}** <:praycoin:758747635909132387>"
+#             .replace(",", "."),
+#             color=0xFF0000)
+
+#     await ctx.respond(embed=embed)
 
 # 5 minutos (en vez de ocho como en el og xd)
 # el intent:

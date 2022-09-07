@@ -259,9 +259,9 @@ async def on_error(event: lightbulb.CommandErrorEvent):
     await _handle_error(event.context, event.exception)
 
 
-async def _handle_error(ctx: lightbulb.Context, exception):
+async def _handle_error(ctx: lightbulb.Context, error):
     # Unwrap the exception to get the original cause
-    exception = exception.__cause__ or exception
+    exception = error.__cause__ or error
 
     # codefactor tells me to do it this way instead of if elif idk 😴
     if isinstance(exception, lightbulb.NotOwner):
@@ -294,8 +294,10 @@ async def _handle_error(ctx: lightbulb.Context, exception):
 
     await ctx.app.rest.create_message(
         717008102175539231,
-        f"<@424213584659218445>\n```py\n{exception}```",
+        f"<@424213584659218445>\n```py\n{exception}```\n```py\n{error.__traceback__}```",
         user_mentions=True)
+
+    await ctx.respond("oops, parece que algo salió mal 😨‼️")
 
     raise exception
 
