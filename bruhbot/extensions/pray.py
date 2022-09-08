@@ -471,7 +471,7 @@ async def shop(ctx: lightbulb.Context):
     desc = f"**Abuela** -> **{get_price(user_shop[1] + 1, 'abuelas'):,}** <:praycoin:758747635909132387>\nConsigues una moneda por hora\n`hay {shop_info[0]:,} abuelas totales creyendo en diferentes religiones`\n**Iglesia** -> **{get_price(user_shop[2] + 1, 'iglesias'):,}** <:praycoin:758747635909132387>\nTodas las abuelas generan una moneda más por hora\n`se han construido {shop_info[1]:,} iglesias en total`\n**Amuleto religioso** -> **{get_price(user_shop[3] + 1, 'amuletos'):,}** <:praycoin:758747635909132387>\nConsigues una moneda más al rezar y se reduce el tiempo de espera por 5s\n`solo se pueden tener 15 por persona`\n"
 
     if lvl >= 10:
-        desc += f"**Ángel** -> **{get_price(user_shop[6] + 1, 'angeles'):,}** <:praycoin:758747635909132387>\nCada ángel te da 10.000 monedas cada día y aumenta tus ganancias de xp\n`hay {shop_info[4]:,} ángeles ayudando distintas religiones en total`"
+        desc += f"**Ángel** -> **{get_price(user_shop[6] + 1, 'angeles'):,}** <:praycoin:758747635909132387>\nCada ángel te da 10.000 monedas cada día y aumenta tus ganancias de xp\n`hay {shop_info[4]:,} ángeles ayudando distintas religiones en total`\n"
 
         if lvl >= 15:
             desc += f"**Guiri** -> **{get_price(user_shop[4] + 1, 'guiris'):,}** <:praycoin:758747635909132387>\nConsigues 10 monedas por hora\n`hay {shop_info[2]:,} guiris visitando religiones en el mundo`\n"
@@ -664,7 +664,7 @@ async def gamble(ctx: lightbulb.Context):
 # @lightbulb.command("blackjack",
 #                    "Apuesta dinero y gana al blackjack para no perderlo")
 # @lightbulb.implements(lightbulb.SlashCommand)
-# async def gamble(ctx: lightbulb.Context):
+# async def blackjack(ctx: lightbulb.Context):
 
 #     # checking and stuff
 #     coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
@@ -697,6 +697,11 @@ async def gamble(ctx: lightbulb.Context):
 #         return
 
 #     # actual code
+
+#     # index 0 -> clubs, 1 -> diamonds, 2 -> hearts, 3 -> spades
+#     # 1 -> ace, 2-10 normal, 11 -> jack, 12 -> queen, 13 -> king
+#     # if i misspelt something i dont give a shit
+#     cards = [[i for i in range(1, 14)] for _ in range(4)]
 
 #     if random.randint(0, 4) <= 1:
 #         await update_coins(ctx.bot.mysql, ctx.author.id, coins + amount)

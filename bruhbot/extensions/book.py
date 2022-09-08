@@ -55,7 +55,10 @@ async def _eval(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def test(ctx: lightbulb.Context):
     await ctx.respond(embed=BetterEmbed().add_field(
-        name="bots cards", value="<:2c:1017108232738709556>"))
+        name="bots cards",
+        value=
+        "<:2c:1017144295809093632><:testing2:1017143924571263047><:testing:1017143923786928208>"
+    ))
 
 
 def load(bot):
