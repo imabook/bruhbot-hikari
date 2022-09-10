@@ -18,6 +18,7 @@ from utils.items import *
 from core.embed import BetterEmbed
 from utils import views
 from utils.views import get_price
+from utils.blackjack import *
 
 plugin = lightbulb.Plugin("Economía")
 
@@ -655,72 +656,143 @@ async def gamble(ctx: lightbulb.Context):
     await ctx.respond(embed=embed)
 
 
-# @plugin.command
-# @lightbulb.add_cooldown(length=5, uses=1, bucket=lightbulb.UserBucket)
-# @lightbulb.option("cantidad",
-#                   "La cantidad de dinero que quieres apostar",
-#                   type=str,
-#                   required=True)
-# @lightbulb.command("blackjack",
-#                    "Apuesta dinero y gana al blackjack para no perderlo")
-# @lightbulb.implements(lightbulb.SlashCommand)
-# async def blackjack(ctx: lightbulb.Context):
+@plugin.command
+@lightbulb.add_cooldown(length=5, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.option("cantidad",
+                  "La cantidad de dinero que quieres apostar",
+                  type=str,
+                  required=True)
+@lightbulb.command("blackjack",
+                   "Apuesta dinero y gana al blackjack para no perderlo")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def blackjack(ctx: lightbulb.Context):
 
-#     # checking and stuff
-#     coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
+    # checking and stuff
+    coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
 
-#     if coins == None:
-#         await ctx.respond("si quieres apostar praycoins, reza primero anda",
-#                           delete_after=10)
-#         return
+    if coins == None:
+        await ctx.respond("si quieres apostar praycoins, reza primero anda",
+                          delete_after=10)
+        return
 
-#     if ctx.options.cantidad == "all":
-#         amount = coins
-#     else:
-#         try:
-#             amount = int(ctx.options.cantidad)
-#         except ValueError:
-#             await ctx.respond(
-#                 f"dame un número entero, no \"**{ctx.options.cantidad}**\"",
-#                 user_mentions=False,
-#                 role_mentions=False,
-#                 mentions_everyone=False,
-#                 delete_after=10)
-#             return
+    if ctx.options.cantidad == "all":
+        amount = coins
+    else:
+        try:
+            amount = int(ctx.options.cantidad)
+        except ValueError:
+            await ctx.respond(
+                f"dame un número entero, no \"**{ctx.options.cantidad}**\"",
+                user_mentions=False,
+                role_mentions=False,
+                mentions_everyone=False,
+                delete_after=10)
+            return
 
-#     if amount > coins:
-#         await ctx.respond("estas apostando más de lo que tienes 🤬",
-#                           delete_after=10)
-#         return
-#     elif amount <= 0:
-#         await ctx.respond("real? 😳", delete_after=10)
-#         return
+    if amount > coins:
+        await ctx.respond("estas apostando más de lo que tienes 🤬",
+                          delete_after=10)
+        return
+    elif amount <= 0:
+        await ctx.respond("real? 😳", delete_after=10)
+        return
 
-#     # actual code
+    await update_coins_subtract(ctx.bot.mysql, ctx.author.id, amount)
 
-#     # index 0 -> clubs, 1 -> diamonds, 2 -> hearts, 3 -> spades
-#     # 1 -> ace, 2-10 normal, 11 -> jack, 12 -> queen, 13 -> king
-#     # if i misspelt something i dont give a shit
-#     cards = [[i for i in range(1, 14)] for _ in range(4)]
+    # quitar dinero aqui
 
-#     if random.randint(0, 4) <= 1:
-#         await update_coins(ctx.bot.mysql, ctx.author.id, coins + amount)
-#         embed = BetterEmbed(
-#             title="Has ganado 🤑",
-#             description=
-#             f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins + amount):,}** <:praycoin:758747635909132387>"
-#             .replace(",", "."),
-#             color=0x126F3D)
-#     else:
-#         await update_coins(ctx.bot.mysql, ctx.author.id, coins - amount)
-#         embed = BetterEmbed(
-#             title="Has perdido 😢",
-#             description=
-#             f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins - amount):,}** <:praycoin:758747635909132387>"
-#             .replace(",", "."),
-#             color=0xFF0000)
+    # actual code
 
-#     await ctx.respond(embed=embed)
+    # index 0 -> clubs, 1 -> diamonds, 2 -> hearts, 3 -> spades
+    # 1 -> ace, 2-10 normal, 11 -> jack, 12 -> queen, 13 -> king
+    # if i misspelt something i dont give a shit
+    stack = [[i for i in range(1, 14)] for _ in range(4)]
+
+    # getting the cards
+    bot_cards = [get_card(stack)]
+
+    # si lo hago en una sola linea [get_card(...), get_card(...)] el primer get_card no poppea la carta
+    user_cards = [get_card(stack)]
+    user_cards += [get_card(stack)]
+
+    view = views.BlackjackView(timeout=45,
+                               stack=stack,
+                               user_cards=user_cards,
+                               bot_cards=bot_cards)
+    # view.add_item(views.SelectAmountButton(disabled=True))
+
+    message = await ctx.respond(BetterEmbed(color=0xFFA749).add_field(
+        name=f"Cartas del bot ({count_value([c for _, c in bot_cards])})",
+        value="".join([get_card_emoji(*info)
+                       for info in bot_cards]) + "<:card:1017157571813052486>",
+        inline=True).add_field(
+            name=f"Tus cartas ({count_value([c for _, c in user_cards])})",
+            value="".join([get_card_emoji(*info) for info in user_cards]),
+            inline=True),
+                                components=view.build())
+
+    view.start(await message.message())
+    await view.wait()
+
+    stack = view.stack
+    user_cards = view.user_cards
+
+    while count_value([c for _, c in bot_cards]) < 17:
+        bot_cards += [get_card(stack)]
+    # 32353B
+
+    bot_count = count_value([c for _, c in bot_cards])
+    user_count = count_value([c for _, c in user_cards])
+
+    # yucky autoformatter on god
+    if bot_count == user_count or (count_value([c for _, c in bot_cards]) > 21
+                                   and
+                                   count_value([c
+                                                for _, c in user_cards]) > 21):
+
+        await update_coins_add(ctx.bot.mysql, ctx.author.id, amount)
+
+        ctx.edit_last_response(embed=BetterEmbed(
+            title="Te quedas igual 🗿", color=0x32353B).add_field(
+                name=f"Cartas del bot ({bot_count})",
+                value="".join([get_card_emoji(*info) for info in bot_cards]),
+                inline=True).add_field(name=f"Tus cartas ({user_count})",
+                                       value="".join([
+                                           get_card_emoji(*info)
+                                           for info in user_cards
+                                       ]),
+                                       inline=True),
+                               components=[])
+
+    elif user_count > bot_count or bot_count > 21:
+        await update_coins_add(ctx.bot.mysql, ctx.author.id, amount * 2)
+
+        ctx.edit_last_response(embed=BetterEmbed(
+            title=f"Has ganado {amount} praycoins más 🤑".replace(",", "."),
+            color=0x126F3D).add_field(
+                name=f"Cartas del bot ({bot_count})",
+                value="".join([get_card_emoji(*info) for info in bot_cards]),
+                inline=True).add_field(name=f"Tus cartas ({user_count})",
+                                       value="".join([
+                                           get_card_emoji(*info)
+                                           for info in user_cards
+                                       ]),
+                                       inline=True),
+                               components=[])
+    elif user_count < bot_count or user_count > 21:
+        ctx.edit_last_response(embed=BetterEmbed(
+            title=f"Has perdido {amount} praycoins 😔".replace(",", "."),
+            color=0xFF0000).add_field(
+                name=f"Cartas del bot ({bot_count})",
+                value="".join([get_card_emoji(*info) for info in bot_cards]),
+                inline=True).add_field(name=f"Tus cartas ({user_count})",
+                                       value="".join([
+                                           get_card_emoji(*info)
+                                           for info in user_cards
+                                       ]),
+                                       inline=True),
+                               components=[])
+
 
 # 5 minutos (en vez de ocho como en el og xd)
 # el intent:
@@ -784,8 +856,6 @@ async def check_for_hour():
     # if it is itll start the hourly praycoin task
     # and stop this task
 
-    print(datetime.now())
-
     if datetime.now().minute == 0 and not hourly_praycoin_update.is_running:
         hourly_praycoin_update.start()
         check_for_hour.stop()
@@ -796,7 +866,13 @@ async def hourly_praycoin_update(bot: BruhApp):
     # do i really need to have the query in queries.py
     # and the execute in the db_handler? its just one line idk
 
-    # tengo que checkear si la hora es 0 o 24 lo que sea para meter las monedas de los angeles
+    if datetime.now().hour == 0:
+        await bot.mysql.execute(
+            "UPDATE economy SET coins = coins + abuelas * (iglesias + 1) + (10 * guiris) * (donaciones + 1) + (10000 * angeles);"
+        )
+
+        return
+
     await bot.mysql.execute(
         "UPDATE economy SET coins = coins + abuelas * (iglesias + 1) + (10 * guiris) * (donaciones + 1);"
     )

@@ -22,6 +22,10 @@ async def update_coins_add(pool: Database, id: int, i: int) -> None:
     await pool.execute(UPDATE_COINS_ADD, (i, id))
 
 
+async def update_coins_subtract(pool: Database, id: int, i: int) -> None:
+    await pool.execute(UPDATE_COINS_SUB, (i, id))
+
+
 async def update_prays(pool: Database, id: int) -> None:
     await pool.execute(UPDATE_PRAYS, (id, ))
 

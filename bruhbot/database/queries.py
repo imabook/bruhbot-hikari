@@ -127,6 +127,12 @@ SET coins = coins + %s
 WHERE id = %s;
 """
 
+UPDATE_COINS_SUB = """
+UPDATE economy
+SET coins = coins - %s
+WHERE id = %s;
+"""
+
 UPDATE_PRAYS = """
 UPDATE users
 SET prayed = prayed + 1

@@ -1,6 +1,7 @@
-from typing import Container
 import lightbulb
 import hikari
+
+import asyncio
 
 import random
 import functools
@@ -54,11 +55,16 @@ async def _eval(ctx: lightbulb.Context):
 @lightbulb.command("test", "testing command")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def test(ctx: lightbulb.Context):
-    await ctx.respond(embed=BetterEmbed().add_field(
-        name="bots cards",
-        value=
-        "<:2c:1017144295809093632><:testing2:1017143924571263047><:testing:1017143923786928208>"
-    ))
+    try:
+        m = await ctx.bot.wait_for(
+            hikari.GuildMessageCreateEvent,
+            timeout=10,
+            predicate=lambda m: m.author_id == ctx.author.id)
+    except asyncio.TimeoutError:
+        await ctx.respond("has tardado mucho, no te llevas nada esta vez 😔")
+        return
+
+    await ctx.respond(m.content)
 
 
 def load(bot):

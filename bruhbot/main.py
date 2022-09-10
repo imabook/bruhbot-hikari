@@ -7,9 +7,10 @@ from lightbulb.ext import tasks
 
 import os
 import datetime
+import aiomysql
+import logging
 from dotenv import load_dotenv
 from contextlib import suppress
-import aiomysql
 
 import random
 from utils.database import Database
@@ -242,14 +243,16 @@ async def on_member_join(event: hikari.MemberCreateEvent):
 async def on_member_leave(event: hikari.MemberDeleteEvent):
     if event.guild_id == 707958627377348719:
 
+        name = (await event.app.rest.fetch_user(event.user_id)).username
+
         await event.app.rest.create_message(
             channel=761970663840940073,
             content="⬅️ " + random.choice([
-                f"a **{event.old_member.username}** le dió sueño 💤",
-                f"**{event.old_member.username}**, este chaval no fuma seguro 👿🚭",
-                f"**{event.old_member.username}** ha traicionado a la banda",
-                f"**{event.old_member.username}** simplemente no le sabe",
-                f"no hay canal nsfw y **{event.old_member.username}** se fué"
+                f"a **{name}** le dió sueño 💤",
+                f"**{name}**, este chaval no fuma seguro 👿🚭",
+                f"**{name}** ha traicionado a la banda",
+                f"**{name}** simplemente no le sabe",
+                f"no hay canal nsfw y **{name}** se fué"
             ]),
             user_mentions=False)
 

@@ -7,6 +7,9 @@ import math
 from contextlib import suppress
 from database.db_handler import *
 
+from utils.blackjack import *
+from core.embed import BetterEmbed
+
 # really gotta rewrite this, wrote it yesterday and im already regretting it
 def get_price(i: int, type: str) -> int:
     match type:
@@ -221,3 +224,47 @@ class YesButton(miru.Button):
                 ctx.view.bonus *= 5
 
         self.view.stop()
+
+
+class BlackjackView(miru.View):
+
+    def __init__(self, stack, user_cards, bot_cards, *args, **kwargs) -> None:
+        self.stack = stack
+        self.user_cards = user_cards
+        self.bot_cards = bot_cards
+
+        # if count_value([c for _, c in self.user_cards]) == 21:
+        #     # blackjack
+        #     self.stop()
+
+        super().__init__(*args, **kwargs)
+
+    # async def on_timeout(self) -> None:
+    #     await self.message.edit(
+    #         "loco, eres realmente lento\nsi no querías comprar nada, no haberme hablado 👿",
+    #         components=[])
+
+    @miru.button(label=random.choice(
+        ["me quedo quedo así", "me planto", "yo confío"]),
+                 style=hikari.ButtonStyle.DANGER)
+    async def stop_button(self, button: miru.Button, ctx: miru.Context):
+        self.stop()  # Stop listening for interactions
+
+    @miru.button(label=random.choice(
+        ["pásame otra carta", "dame otra", "necesito otra"]), style=hikari.ButtonStyle.SUCCESS)
+    async def get_card(self, button: miru.Button, ctx: miru.Context):
+        self.user_cards += [get_card(self.stack)]
+
+        if count_value([c for _, c in self.user_cards]) >= 21:
+            self.stop()
+            return
+
+        await ctx.edit_response(embed=BetterEmbed(color=0xFFA749).add_field(
+            name=f"Cartas del bot ({count_value([c for _, c in self.bot_cards])})",
+            value="".join([get_card_emoji(*info) for info in self.bot_cards]) +
+            "<:card:1017157571813052486>",
+            inline=True).add_field(
+                name=f"Tus cartas ({count_value([c for _, c in self.user_cards])})",
+                value="".join([get_card_emoji(*info) for info in self.user_cards]),
+                inline=True), components=self.build())
+
