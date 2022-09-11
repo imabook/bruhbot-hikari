@@ -17,14 +17,15 @@ plugin = lightbulb.Plugin("Imágenes")
 
 
 async def _fetch(ctx: lightbulb.Context, url: str):
-    async with ctx.app.rest.trigger_typing(ctx.get_channel()):
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
-                ssl=False)) as session:
-            # asi no andan jodiendo los certificates (creo xd^^)
-            async with session.get(
-                    url, headers={'User-Agent-Forntite-Not-Goty': 'A'}) as r:
+    # async with ctx.app.rest.trigger_typing(ctx.get_channel()):
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
+            ssl=False)) as session:
+        # asi no andan jodiendo los certificates (creo xd^^)
+        async with session.get(url,
+                               headers={'User-Agent-Forntite-Not-Goty':
+                                        'A'}) as r:
 
-                return io.BytesIO(await r.read())
+            return io.BytesIO(await r.read())
 
 
 def _img_to_bytes(img):

@@ -234,6 +234,7 @@ class BlackjackView(miru.View):
         self.bot_cards = bot_cards
 
         self.author_id = author_id
+        self.ignore_ids = []
 
         # if count_value([c for _, c in self.user_cards]) == 21:
         #     # blackjack
