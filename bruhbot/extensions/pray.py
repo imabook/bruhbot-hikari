@@ -198,7 +198,7 @@ async def pinfo(ctx: lightbulb.Context):
                   required=True)
 @lightbulb.option("cantidad",
                   "Cantidad de monedas que quieres dar",
-                  type=int,
+                  type=str,
                   required=True)
 @lightbulb.command("give", "Das monedas a la persona que quieras")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -217,15 +217,29 @@ async def give(ctx: lightbulb.Context):
                           delete_after=10)
         return
 
-    if ctx.options.cantidad <= 0:
+    author_coins = await fetch_coins(ctx.bot.mysql, ctx.member.id)
+
+    if ctx.options.cantidad == "all":
+        amount = author_coins
+    else:
+        try:
+            amount = int(ctx.options.cantidad)
+        except ValueError:
+            await ctx.respond(
+                f"dame un número entero, no \"**{ctx.options.cantidad}**\"",
+                user_mentions=False,
+                role_mentions=False,
+                mentions_everyone=False,
+                delete_after=10)
+            return
+
+    if amount <= 0:
         await ctx.respond(
-            f"**{ctx.options.cantidad}** <:praycoin:758747635909132387> ehh \nalto gracioso 🗿",
+            f"**{amount}** <:praycoin:758747635909132387> ehh \nalto gracioso 🗿",
             delete_after=10)
         return
 
-    author_coins = await fetch_coins(ctx.bot.mysql, ctx.member.id)
-
-    if not author_coins or author_coins < ctx.options.cantidad:
+    if not author_coins or author_coins < amount:
         await ctx.respond(
             f"te crees que las monedas se hacen solas?\ntienes **{author_coins or 0}** praycoins 🗿, regala menos monedas o sé menos humilde 🐠",
             delete_after=10)
@@ -248,22 +262,19 @@ async def give(ctx: lightbulb.Context):
 
     await make_transaction(ctx.bot.mysql, ctx.member.id,
                            ctx.options.miembro.id, author_coins, other_coins,
-                           ctx.options.cantidad)
+                           amount)
 
     # actually yucky formatting
     await ctx.respond(
         BetterEmbed(
             description=
-            f"{ctx.member.mention} le ha dado **{ctx.options.cantidad}** a {ctx.options.miembro.mention}"
-        ).add_field(
-            name=ctx.member.username,
-            value=
-            f"```py\nPraycoins: {author_coins - ctx.options.cantidad}\n```",
-            inline=True).add_field(
-                name=ctx.options.miembro.username,
-                value=
-                f"```py\nPraycoins: {other_coins + ctx.options.cantidad}\n```",
-                inline=True))
+            f"{ctx.member.mention} le ha dado **{amount}** a {ctx.options.miembro.mention}"
+        ).add_field(name=ctx.member.username,
+                    value=f"```py\nPraycoins: {author_coins - amount}\n```",
+                    inline=True).add_field(
+                        name=ctx.options.miembro.username,
+                        value=f"```py\nPraycoins: {other_coins + amount}\n```",
+                        inline=True))
 
 
 @plugin.command
@@ -752,7 +763,7 @@ async def blackjack(ctx: lightbulb.Context):
 
         await update_coins_add(ctx.bot.mysql, ctx.author.id, amount)
 
-        ctx.edit_last_response(embed=BetterEmbed(
+        await ctx.edit_last_response(embed=BetterEmbed(
             title="Te quedas igual 🗿", color=0x32353B).add_field(
                 name=f"Cartas del bot ({bot_count})",
                 value="".join([get_card_emoji(*info) for info in bot_cards]),
@@ -762,13 +773,13 @@ async def blackjack(ctx: lightbulb.Context):
                                            for info in user_cards
                                        ]),
                                        inline=True),
-                               components=[])
+                                     components=[])
 
-    elif user_count > bot_count or bot_count > 21:
+    elif (user_count > bot_count and user_count <= 21) or bot_count > 21:
         await update_coins_add(ctx.bot.mysql, ctx.author.id, amount * 2)
 
-        ctx.edit_last_response(embed=BetterEmbed(
-            title=f"Has ganado {amount} praycoins más 🤑".replace(",", "."),
+        await ctx.edit_last_response(embed=BetterEmbed(
+            title=f"Has ganado {amount} praycoins 🤑".replace(",", "."),
             color=0x126F3D).add_field(
                 name=f"Cartas del bot ({bot_count})",
                 value="".join([get_card_emoji(*info) for info in bot_cards]),
@@ -778,9 +789,9 @@ async def blackjack(ctx: lightbulb.Context):
                                            for info in user_cards
                                        ]),
                                        inline=True),
-                               components=[])
-    elif user_count < bot_count or user_count > 21:
-        ctx.edit_last_response(embed=BetterEmbed(
+                                     components=[])
+    elif (user_count < bot_count and bot_count <= 21) or user_count > 21:
+        await ctx.edit_last_response(embed=BetterEmbed(
             title=f"Has perdido {amount} praycoins 😔".replace(",", "."),
             color=0xFF0000).add_field(
                 name=f"Cartas del bot ({bot_count})",
@@ -791,7 +802,7 @@ async def blackjack(ctx: lightbulb.Context):
                                            for info in user_cards
                                        ]),
                                        inline=True),
-                               components=[])
+                                     components=[])
 
 
 # 5 minutos (en vez de ocho como en el og xd)
