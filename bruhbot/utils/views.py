@@ -228,10 +228,12 @@ class YesButton(miru.Button):
 
 class BlackjackView(miru.View):
 
-    def __init__(self, stack, user_cards, bot_cards, *args, **kwargs) -> None:
+    def __init__(self, stack, user_cards, bot_cards, author_id, *args, **kwargs) -> None:
         self.stack = stack
         self.user_cards = user_cards
         self.bot_cards = bot_cards
+
+        self.author_id = author_id
 
         # if count_value([c for _, c in self.user_cards]) == 21:
         #     # blackjack
@@ -267,4 +269,16 @@ class BlackjackView(miru.View):
                 name=f"Tus cartas ({count_value([c for _, c in self.user_cards])})",
                 value="".join([get_card_emoji(*info) for info in self.user_cards]),
                 inline=True), components=self.build())
+
+    async def view_check(self, ctx: miru.Context) -> bool:
+        if ctx.user.id == self.author_id:
+            return True
+
+        if ctx.user.id not in self.ignore_ids:
+            await ctx.respond(random.choice(["quédate quieto 😡, tu no has hecho el comando", "para, tu no has hecho el comando", "si quieres comprar algo tu, haz el comando TÚ", "párate anda, si quieres comprar algo haz el comando tú"]),
+                flags=hikari.MessageFlag.EPHEMERAL)
+
+            self.ignore_ids += [ctx.user.id]
+        return False
+
 

@@ -729,7 +729,8 @@ async def blackjack(ctx: lightbulb.Context):
     view = views.BlackjackView(timeout=45,
                                stack=stack,
                                user_cards=user_cards,
-                               bot_cards=bot_cards)
+                               bot_cards=bot_cards,
+                               author_id=ctx.author.id)
     # view.add_item(views.SelectAmountButton(disabled=True))
 
     message = await ctx.respond(BetterEmbed(color=0xFFA749).add_field(
