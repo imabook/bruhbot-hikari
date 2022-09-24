@@ -14,6 +14,7 @@ from PIL import ImageFilter, ImageFont, ImageDraw
 from utils.wrapper import wrap_word
 
 plugin = lightbulb.Plugin("Imágenes")
+plugin.add_checks(lightbulb.guild_only)
 
 
 async def _fetch(ctx: lightbulb.Context, url: str):

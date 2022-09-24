@@ -43,6 +43,7 @@ bot = BruhApp(
     cache_settings=hikari.impl.CacheSettings(
         components=hikari.api.CacheComponents.GUILDS),
 )
+
 miru.load(bot)
 tasks.load(bot)
 
@@ -292,6 +293,15 @@ async def _handle_error(ctx: lightbulb.Context, error):
         return await ctx.respond(
             f"{random.choice(['espera', 'goofi', 'ehh', 'escucha,'])} te faltan argumentos 🗣️ xd\n>>> ```asciidoc\n{formatted_args}```",
             delete_after=15)
+
+    if isinstance(exception, lightbulb.OnlyInGuild):
+
+        return await ctx.respond(
+            f"que haces en mis dms? usa los comandos en un server 😡",
+            delete_after=15)
+
+    if isinstance(exception, hikari.NotFoundError):
+        return
     # elif isinstance(event.exception, lightbulb.CommandInvocationError):
     #     return
 
@@ -300,7 +310,10 @@ async def _handle_error(ctx: lightbulb.Context, error):
         f"<@424213584659218445>\n```py\n{exception}```\n```py\n{error.__traceback__}```",
         user_mentions=True)
 
-    await ctx.respond("oops, parece que algo salió mal 😨‼️")
+    try:
+        await ctx.respond("oops, parece que algo salió mal 😨‼️")
+    except:
+        ...
 
     raise exception
 

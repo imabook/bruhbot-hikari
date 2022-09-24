@@ -21,6 +21,8 @@ from utils.views import get_price
 from utils.blackjack import *
 
 plugin = lightbulb.Plugin("Economía")
+plugin.add_checks(lightbulb.guild_only)
+
 
 # xd
 PALABRAS_FEAS = [

@@ -6,6 +6,7 @@ import datetime
 from core.embed import BetterEmbed
 
 plugin = lightbulb.Plugin("Ayuda")
+plugin.add_checks(lightbulb.guild_only)
 
 
 async def build_pages(ctx: lightbulb.Context):

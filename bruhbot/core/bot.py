@@ -14,10 +14,7 @@ class BruhApp(lightbulb.BotApp):
         super().__init__(**kwargs)
 
         self.mysql: Database
-
         self.loaded = time.time()
-        self.msgcmd = {
-        }  # if its in many servers this mini cache aint going to be useful and it wouldnt work well
 
     @staticmethod
     async def get_token() -> str:

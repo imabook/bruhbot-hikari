@@ -9,6 +9,7 @@ import functools
 from core.embed import BetterEmbed
 
 plugin = lightbulb.Plugin("Libro")
+plugin.add_checks(lightbulb.guild_only)
 
 
 @plugin.command
