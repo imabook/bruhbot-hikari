@@ -23,7 +23,6 @@ from utils.blackjack import *
 plugin = lightbulb.Plugin("Economía")
 plugin.add_checks(lightbulb.guild_only)
 
-
 # xd
 PALABRAS_FEAS = [
     "cabrón", "hdp", "mmg", "inútil", "botardo", "npc", "mamabicho"
@@ -175,7 +174,7 @@ async def pinfo(ctx: lightbulb.Context):
     # user_info // economy_info
     ui, ei = data
 
-    pph = ei[1] * (ei[2] + 1) + ei[4] * (ei[5] + 1)
+    pph = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
 
     await ctx.respond(embed=BetterEmbed(
         title=ui[0] or f"La religión de {member.username}", color=0xFCA51F
