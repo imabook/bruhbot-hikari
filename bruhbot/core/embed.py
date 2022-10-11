@@ -22,5 +22,5 @@ class BetterEmbed(hikari.Embed):
                 "i love lean 💜", "me gusta este pez 🐟", "cachimbacraft? 😇",
                 "lo hize yo", "HELP ME 冰冷是個笑話",
                 f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}",
-                "yo y los tirando facts cuando:", "eres real?", "psicótico 😁"
+                "yo y los tirando facts cuando:", "eres real?", "psicótico 😁", "humilde"
             ]))
