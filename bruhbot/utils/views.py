@@ -52,7 +52,7 @@ class BuyView(miru.View):
             return True
 
         if ctx.user.id not in self.ignore_ids:
-            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "para, tú no has hecho el comando", "si quieres comprar algo tú, haz el comando TÚ", "párate anda, si quieres comprar algo haz el comando tú"]),
+            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "párate‼️\ntú no has hecho el comando", "si quieres comprar algo tú, haz el comando TÚ", "párate anda, si quieres comprar algo haz el comando tú"]),
                 flags=hikari.MessageFlag.EPHEMERAL)
 
             self.ignore_ids += [ctx.user.id]
@@ -276,7 +276,7 @@ class BlackjackView(miru.View):
             return True
 
         if ctx.user.id not in self.ignore_ids:
-            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "para, tú no has hecho el comando", "si quieres apostar dinero tú, haz el comando TÚ", "párate anda, si quieres apostar dinero haz el comando tú"]),
+            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "párate‼️\ntú no has hecho el comando", "si quieres apostar dinero tú, haz el comando TÚ", "párate anda, si quieres apostar dinero haz el comando tú"]),
                 flags=hikari.MessageFlag.EPHEMERAL)
 
             self.ignore_ids += [ctx.user.id]

@@ -271,7 +271,7 @@ async def _handle_error(ctx: lightbulb.Context, error):
     if isinstance(exception, lightbulb.NotOwner):
         return await ctx.respond(random.choice([
             "que haces goofi, no eres el libro",
-            "que pesado, tu no puedes usar este comando", "tonto"
+            "que pesado, tu no puedes usar este comando", "tonto", "va 👍"
         ]),
                                  flags=hikari.MessageFlag.EPHEMERAL)
         # 64 -> EPHEMERAL `https://www.hikari-py.dev/hikari/messages.html#hikari.messages.MessageFlag`

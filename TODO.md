@@ -24,15 +24,15 @@ Las cosas que quiero ir haciendo/portando del bot:
 
 ### Probablemente no acabe haciendo muchas de estas cosas porque no serviran para cuando los comandos sean slash commands solo
 
-----------------------------
-blackjack
-pensar como hacer el desafio
-items (toda su funciolalidad)
-añadir mas items
-logros
+---
+    blackjack - si
+    pensar como hacer el desafio
+    items (toda su funciolalidad)
+    añadir mas items
+    logros
 
-rebirth
-pagina web
+    rebirth
+    pagina web
 
-api de top.gg
-patreon dinero dinero dinero dinero dinero
+    api de top.gg
+    patreon dinero dinero dinero dinero dinero - si xd
