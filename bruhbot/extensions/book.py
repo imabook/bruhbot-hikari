@@ -48,12 +48,12 @@ def insert_returns(body):
 
     # for if statements, we insert returns into the body and the orelse
     if isinstance(body[-1], ast.If):
-        self.insert_returns(body[-1].body)
-        self.insert_returns(body[-1].orelse)
+        insert_returns(body[-1].body)
+        insert_returns(body[-1].orelse)
 
     # for with blocks, again we insert returns into the body
     if isinstance(body[-1], ast.With):
-        self.insert_returns(body[-1].body)
+        insert_returns(body[-1].body)
 
 
 @plugin.command
@@ -70,6 +70,7 @@ async def _eval(ctx: lightbulb.Context):
     env = {
         'ctx': ctx,
         'bot': ctx.bot,
+        'rest': ctx.bot.rest,
         'discord': hikari,
         'hikari': hikari,
         'lightbulb': lightbulb,
@@ -116,17 +117,17 @@ async def _eval(ctx: lightbulb.Context):
 
         parsed_input = "\n".join([
             "> " + line for line in
-            f"```py\n{code if len(code) <= 250 else code[:250] + f'{nl}...'}```"
+            f"```py\n{code if len(code) <= 250 else code[:250] + f'{nl}...'}\n```"
             .splitlines()
         ])
         parsed_output = "\n".join([
             "> " + line for line in
-            f"```py\n{result if len(str(result)) <= 1500 else str(result)[:1500] + f'{nl}...'}```"
+            f"```py\n{result if len(str(result)) <= 1500 else str(result)[:1500] + f'{nl}...'}\n```"
             .splitlines()
         ])
 
         await ctx.respond(
-            f"**input:** 👍\n{parsed_input}\n\n**output:** 📠\n{parsed_output}\n\nha tardado **{round((datetime.datetime.now() - start).total_seconds() * 1000, 4)} ms** en ejecutarse ⏰"
+            f"{parsed_input}**input ^** 👍\n\n{parsed_output}**output ^** 📠\n\nha tardado **{round((datetime.datetime.now() - start).total_seconds() * 1000, 4)} ms** en ejecutarse ⏰"
         )
 
     except Exception as e:
