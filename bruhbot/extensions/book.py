@@ -100,6 +100,8 @@ async def _eval(ctx: lightbulb.Context):
 
     code = code.strip("` ")
 
+    await ctx.respond("va, esperate un segundo... 🐠")
+
     try:
         body = "async def _exec():\n" + "\n".join(f"\t{i}"
                                                   for i in code.splitlines())
@@ -126,12 +128,13 @@ async def _eval(ctx: lightbulb.Context):
             .splitlines()
         ])
 
-        await ctx.respond(
+        await ctx.edit_last_response(
             f"{parsed_input}**input ^** 👍\n\n{parsed_output}**output ^** 📠\n\nha tardado **{round((datetime.datetime.now() - start).total_seconds() * 1000, 4)} ms** en ejecutarse ⏰"
         )
 
     except Exception as e:
-        await ctx.respond(f"vaya... ha salido mal\n```prolog\nError {e}```")
+        await ctx.edit_last_response(
+            f"vaya... ha salido mal\n```prolog\nError {e}```")
 
 
 @plugin.command
