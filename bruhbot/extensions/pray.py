@@ -162,7 +162,8 @@ async def pinfo(ctx: lightbulb.Context):
     member = ctx.options.miembro or ctx.member
 
     data = await fetch_prayinfo(ctx.bot.mysql, member.id)
-
+    lvl, xp = await fetch_level(ctx.bot.mysql, member.id)
+    
     if not data[0] or not data[1]:
         # user isnt in the db
         await ctx.respond(
@@ -181,7 +182,7 @@ async def pinfo(ctx: lightbulb.Context):
     ).add_field(
         name="Praycoins:",
         value=
-        f"{member.mention} tiene **{ei[0]}** <:praycoin:758747635909132387>\nHa rezado **{ui[1]}** veces y empezó <t:{get_timestamp(ui[2])}:R> 😨\nConsigue **{pph}** <:praycoin:758747635909132387> por hora 🤑\nHa recibido **{ui[3]}** <:praycoin:758747635909132387> y ha dado **{ui[4]}** <:praycoin:758747635909132387>"
+        f"{member.mention} tiene **{ei[0]}** <:praycoin:758747635909132387> y es nivel **{lvl}**\nHa rezado **{ui[1]}** veces y empezó <t:{get_timestamp(ui[2])}:R> 😨\nConsigue **{pph}** <:praycoin:758747635909132387> por hora 🤑\nHa recibido **{ui[3]}** <:praycoin:758747635909132387> y ha dado **{ui[4]}** <:praycoin:758747635909132387>"
     ).add_field(
         name="Cosas compradas:",
         value=
