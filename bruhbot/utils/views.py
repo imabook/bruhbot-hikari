@@ -97,11 +97,11 @@ class SelectObjectButton(miru.Select):
         amount = 0
         price = 0
 
-        price_map = {}
+        price_map = {} # la verdad es un poco gay usar esto en vez de una list pero bueno
 
         i = 0
-        while True:
-        
+        while len(price_map) < 25 :
+
             price += get_price(object_count + 1 + i, object)
 
             if coins < price:
