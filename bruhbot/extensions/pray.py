@@ -162,7 +162,6 @@ async def pinfo(ctx: lightbulb.Context):
     member = ctx.options.miembro or ctx.member
 
     data = await fetch_prayinfo(ctx.bot.mysql, member.id)
-    lvl, _ = await fetch_level(ctx.bot.mysql, member.id)
 
     if not data[0] or not data[1]:
         # user isnt in the db
@@ -171,6 +170,8 @@ async def pinfo(ctx: lightbulb.Context):
             user_mentions=False,
             delete_after=10)
         return
+
+    lvl, _ = await fetch_level(ctx.bot.mysql, member.id)
 
     # user_info // economy_info
     ui, ei = data
