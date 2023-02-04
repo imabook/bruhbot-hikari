@@ -580,12 +580,26 @@ async def daily(ctx: lightbulb.Context):
     #     )
     #     return
 
-    coins = random.randint(10, 100)
+    
+    # he copiado esto de cuando sacas el pinfo
+    data = await fetch_prayinfo(ctx.bot.mysql, member.id)
+    ui, ei = data
+    pph = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
+    
+    # le he puesto que el daily te de o la mitad de tus prays por hora o el doble y las he pasado a int pq eran float y no sé si los acepta el randint()
+    coins = random.randint(int(pph/2), int(pph*2))
     await update_coins_add(ctx.bot.mysql, ctx.author.id, coins)
 
-    await ctx.respond(
-        f"nuevo día ehh?, has conseguido **{coins}** <:praycoin:758747635909132387>\na ver si mañana consigues un item"
-    )
+    # solo si es 0 (false)
+    if not random.randint(0, 10):
+        await update_abuelas_add(pool, ctx.author.id)
+        await ctx.respond(
+            f"nuevo día ehh?, has conseguido **{coins}** <:praycoin:758747635909132387>\nno puede ser!! te la has sacado y has atraido a otra abuela a tu religión!"
+        )
+    else:
+        await ctx.respond(
+            f"nuevo día ehh?, has conseguido **{coins}** <:praycoin:758747635909132387>\na ver si mañana consigues un item"
+        )
 
 
 # yes yes i gotta do this right, short quick implementation, gotta change it soon
