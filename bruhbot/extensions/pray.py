@@ -170,10 +170,10 @@ async def pinfo(ctx: lightbulb.Context):
             user_mentions=False,
             delete_after=10)
         return
-
+    
     # user_info // economy_info
     ui, ei = data
-
+    
     pph = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
 
     await ctx.respond(embed=BetterEmbed(
@@ -577,8 +577,14 @@ async def daily(ctx: lightbulb.Context):
     #         f"nuevo día ehh?, has conseguido un item\n**{name}** {get_emoji(item)}: {description}"
     #     )
     #     return
-
-    coins = random.randint(10, 100)
+    
+    data = await fetch_prayinfo(ctx.bot.mysql, ctx.author.id)
+    # user_info // economy_info
+    ui, ei = data
+    praysXHora = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
+    
+    coins = random.randint(praysXHora, praysXHora*10) 
+    # El maximo de prays que se podrán conseguir serán pues worth 10 horas y el minimo 1 hora, asi sirve de algo el daily cuando subes un poco de nivel
     await update_coins_add(ctx.bot.mysql, ctx.author.id, coins)
 
     await ctx.respond(
