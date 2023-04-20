@@ -170,10 +170,10 @@ async def pinfo(ctx: lightbulb.Context):
             user_mentions=False,
             delete_after=10)
         return
-    
+
     # user_info // economy_info
     ui, ei = data
-    
+
     pph = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
 
     await ctx.respond(embed=BetterEmbed(
