@@ -416,6 +416,7 @@ async def ranks(ctx: lightbulb.Context):
         ]
     else:
         # si la cuenta ha sido borrada (id y todo) y sigue en la base de datos va a dar error (arreglar si eso)
+        # no da error pero se presenta como Deleted User #....
         [
             embed.add_field(
                 name=
@@ -760,10 +761,8 @@ async def blackjack(ctx: lightbulb.Context):
     user_count = count_value([c for _, c in user_cards])
 
     # yucky autoformatter on god
-    if bot_count == user_count or (count_value([c for _, c in bot_cards]) > 21
-                                   and
-                                   count_value([c
-                                                for _, c in user_cards]) > 21):
+    # !!!!!!!!!!!!!!!! mirar si puedo cambiar count_value de abajo por bot_count y user_count (se podria sin problema pero tengo miedo)
+    if bot_count == user_count or (bot_count > 21 and user_count > 21):
 
         await update_coins_add(ctx.bot.mysql, ctx.author.id, amount)
 

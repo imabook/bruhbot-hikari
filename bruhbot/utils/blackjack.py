@@ -66,6 +66,7 @@ def get_card(stack):
     return type, card
 
 def count_value(cards: list[Cards]) -> int:
+    # uso `while True` para cambiar los ases que vale 11 a los que valen 1 uno por uno, asique no tendria que ser infinito y nunca muchas repeticiones, de todas formas abria que hacer un contador por si hay algun fallo para que no me maxee la cpu 👍
     while True:
         if sum([c.value for c in cards]) <= 21:
             break
