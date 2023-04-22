@@ -83,7 +83,7 @@ async def fetch_level_only(pool: Database, id: int):
 async def fetch_prayinfo(pool: Database, id: int):
     user_info = await pool.fetchone(FETCH_PRAYINFO_USER, (id, ))
 
-    economy_info = await pool.fetchone(FETCH_PRAYINFO_ECONOMY, (id, ))
+    economy_info = await fetch_user_shop(pool, id)
 
     return (user_info, economy_info)
 
