@@ -586,7 +586,11 @@ async def daily(ctx: lightbulb.Context):
     ei = await fetch_user_shop(ctx.bot.mysql, ctx.author.id)
     pph = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
 
-    coins = random.randint(pph, pph * 12)
+    # para que la gente del principio consiga monedas
+    if pph < 5:
+        coins = random.randint(5, 50)
+    else:
+        coins = random.randint(pph, pph * 12)
     # El maximo de prays que se podrán conseguir serán pues worth x horas y el minimo 1 hora, asi sirve de algo el daily cuando subes un poco de nivel
     await update_coins_add(ctx.bot.mysql, ctx.author.id, coins)
 
