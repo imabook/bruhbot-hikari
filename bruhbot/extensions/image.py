@@ -47,38 +47,36 @@ def _blend(avatar, image, opacity=70):
     return _img_to_bytes(avatar)
 
 
-@plugin.command
-@lightbulb.command("persona", "Manda una foto de una persona que no existe")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def persona(ctx: lightbulb.Context):
+# @plugin.command
+# @lightbulb.command("persona", "Manda una foto de una persona que no existe")
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def persona(ctx: lightbulb.Context):
 
-    img = await _fetch(ctx, "https://thispersondoesnotexist.com/image")
-    await ctx.respond("aqui tienes una persona NO real", attachment=img)
+#     img = await _fetch(ctx, "https://thispersondoesnotexist.com/image")
+#     await ctx.respond("aqui tienes una persona NO real", attachment=img)
 
-    # if isinstance(ctx.command, lightbulb.commands.SlashCommand):
-    #     await response.edit(attachment=io.BytesIO(await r.read()))
-    # hago este check porque el respond del slash context no usa el attachment o algo y hay que editar la foto en el mensaje
-    # simplemente troleado en la siguiente version de lightbulb lo pusieron xd
+#     # if isinstance(ctx.command, lightbulb.commands.SlashCommand):
+#     #     await response.edit(attachment=io.BytesIO(await r.read()))
+#     # hago este check porque el respond del slash context no usa el attachment o algo y hay que editar la foto en el mensaje
+#     # simplemente troleado en la siguiente version de lightbulb lo pusieron xd
 
+# @plugin.command
+# @lightbulb.command("gato",
+#                    "Manda una foto de un gato que no existe",
+#                    aliases=["cat"])
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def gato(ctx: lightbulb.Context):
 
-@plugin.command
-@lightbulb.command("gato",
-                   "Manda una foto de un gato que no existe",
-                   aliases=["cat"])
-@lightbulb.implements(lightbulb.SlashCommand)
-async def gato(ctx: lightbulb.Context):
+#     img = await _fetch(ctx, "https://thiscatdoesnotexist.com")
+#     await ctx.respond("aqui tienes un gato NO real", attachment=img)
 
-    img = await _fetch(ctx, "https://thiscatdoesnotexist.com")
-    await ctx.respond("aqui tienes un gato NO real", attachment=img)
+# @plugin.command
+# @lightbulb.command("cuadro", "Manda una foto de un cuadro que no existe")
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def cuadro(ctx: lightbulb.Context):
 
-
-@plugin.command
-@lightbulb.command("cuadro", "Manda una foto de un cuadro que no existe")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def cuadro(ctx: lightbulb.Context):
-
-    img = await _fetch(ctx, "https://thisartworkdoesnotexist.com")
-    await ctx.respond("aqui tienes un cuadro NO real", attachment=img)
+#     img = await _fetch(ctx, "https://thisartworkdoesnotexist.com")
+#     await ctx.respond("aqui tienes un cuadro NO real", attachment=img)
 
 
 @plugin.command

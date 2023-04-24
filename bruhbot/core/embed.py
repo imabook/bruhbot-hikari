@@ -12,7 +12,7 @@ FOOTERS = [
     "yo y los tirando facts cuando:", "eres real?", "psicótico 😁", "humilde",
     "BING CHILLING 🍦", "enterprise community edition 💸", "con flow tarantula",
     "cada día peor y no lo entiendo", "j", "te echo de menos sewerslvt 😢",
-    "momento gitano? 😨"
+    "momento gitano? 😨", "si te llamas javi el blackjack esta amañado 😷"
 ]
 
 
