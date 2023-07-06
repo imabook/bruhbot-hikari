@@ -9,32 +9,35 @@ import os
 import datetime
 import aiomysql
 import logging
+import threading
+import asyncio
 from dotenv import load_dotenv
 from contextlib import suppress
 
 import random
+from aiohttp import web
 from utils.database import Database
+from database.db_handler import DBHandler
 
 from core.embed import BetterEmbed
 from core.bot import BruhApp
 
 load_dotenv()
-intents = (Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_BANS
+
+intents = (Intents.GUILDS | Intents.GUILD_MEMBERS
            | Intents.GUILD_EMOJIS | Intents.ALL_MESSAGES
            | Intents.GUILD_MESSAGE_REACTIONS | Intents.ALL_MESSAGE_TYPING)
 
+# def prefix(app: BruhApp, message: hikari.Message):
+#     if message.author and message.author.id in [
+#             424213584659218445, 436521909144911874, 506565592757698600
+#     ]:
+#         return ["", "bruh "]
 
-def prefix(app: BruhApp, message: hikari.Message):
-    if message.author and message.author.id in [
-            424213584659218445, 436521909144911874, 506565592757698600
-    ]:
-        return ["", "bruh "]
-
-    return "bruh"
-
+#     return "bruh"
 
 bot = BruhApp(
-    token=os.environ["BRUH_TOKEN"],
+    token=os.environ["TEST_TOKEN"],
     intents=intents,
     # prefix=prefix,
     owner_ids=[424213584659218445, 436521909144911874],
@@ -44,7 +47,7 @@ bot = BruhApp(
         components=hikari.api.CacheComponents.GUILDS),
 )
 
-miru.load(bot)
+miru.install(bot)
 tasks.load(bot)
 
 
@@ -106,36 +109,9 @@ async def reload(ctx: lightbulb.Context):
         await ctx.respond(f"semihecho supongo xd:\n```fix\n{(e)}\n```")
 
 
-# @bot.listen(hikari.MessageUpdateEvent)
-# async def on_edit(event: hikari.MessageUpdateEvent):
-
-#     # me cago en dios que chorizal
-#     time = datetime.datetime.utcnow().replace(
-#         tzinfo=datetime.timezone.utc) - event.message.created_at.replace(
-#             tzinfo=datetime.timezone.utc)
-
-#     if time > datetime.timedelta(hours=3):
-#         return
-
-#     try:
-#         if event.message.author.is_bot:
-#             return
-#     except Exception:
-#         # sometimes author is Undefined ig if its undefined it cant never be the main bot -> so actual user not bot
-#         pass
-
-#     with suppress(AttributeError):
-#         ctx = await bot.get_prefix_context(event=event)
-
-#         if ctx:
-#             try:
-#                 await bot.process_prefix_commands(context=ctx)
-#             except Exception as e:
-#                 await _handle_error(ctx, e)
-
-
 @bot.listen(hikari.StartedEvent)
 async def on_connect(event: hikari.StartedEvent):
+
     # load them database connection
     pool = await aiomysql.create_pool(host=os.environ["HOST"],
                                       port=int(os.environ["PORT"]),
@@ -145,6 +121,7 @@ async def on_connect(event: hikari.StartedEvent):
                                       autocommit=True)
 
     bot.mysql = Database(pool)
+    bot.db = DBHandler(bot.mysql)
 
     # load them cogs
     [
@@ -158,6 +135,9 @@ async def on_disconnect(event: hikari.StoppingEvent):
     # se supone que se triggea justo antes de que el bot se desconecte (supongo que si discord fuerza que el bot se desconecte no avisara)
     try:
         await bot.mysql.close()
+
+        # await bot.web_app.shutdown()
+        # await bot.web_app.cleanup()
     except Exception as e:
         print(e)
 

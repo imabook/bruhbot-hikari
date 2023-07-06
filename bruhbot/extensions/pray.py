@@ -30,7 +30,7 @@ PALABRAS_FEAS = [
 
 
 async def callback(ctx: lightbulb.Context):
-    amuletos = await fetch_amuletos(ctx.bot.mysql, ctx.author.id) or 0
+    amuletos = await ctx.bot.db.fetch_amuletos(ctx.author.id) or 0
 
     return lightbulb.UserBucket(120 - 5 * amuletos, 1)
 
@@ -50,7 +50,7 @@ def get_timestamp(d: datetime) -> int:
 
 
 def human_format(num):
-    # si lo he sacado de stack overflow porque no me sale de los huevos hacer estoy yo mismo
+    # si lo he sacado de stack overflow porque no me sale de los huevos hacer esto yo mismo
     num = float('{:.3g}'.format(num))
     magnitude = 0
     while abs(num) >= 1000:
@@ -60,37 +60,6 @@ def human_format(num):
                          ['', 'K', 'M', 'B', 'T'][magnitude])
 
 
-async def handle_xp(ctx: lightbulb.Context, id: int, bonus: int = 0):
-    lvl, xp = await fetch_level(ctx.app.mysql, id)
-    max = get_max_xp(lvl)
-
-    # get other bonus multipliers
-    bonus += lvl // 10
-
-    xp_add = random.randint(1, 5) + bonus
-
-    new_xp = xp_add + xp
-
-    if new_xp >= max:
-        next_max = get_max_xp(lvl + 1)
-        new_xp -= max
-
-        if new_xp >= next_max:
-            # prevent more than one lvl up
-            new_xp = next_max - 1
-
-        await update_lvl(ctx.app.mysql, id, lvl + 1, new_xp)
-        await ctx.respond(
-            f"{random.choice(['espera espera', 'el diablo', 'yoooo', 'mira', 'enhorabuena'])}, has subido al nivel **{lvl + 1}** 😎🎉"
-        )
-    else:
-        await update_xp(ctx.app.mysql, id, new_xp)
-
-
-def get_max_xp(i: int) -> int:
-    return math.ceil(((i + 1)**1.2) * 10)
-
-
 @plugin.command
 @lightbulb.add_cooldown(callback=callback)
 @lightbulb.command("pray", "Reza para conseguir praycoins", aliases=["p"])
@@ -98,7 +67,7 @@ def get_max_xp(i: int) -> int:
 async def pray(ctx: lightbulb.Context):
 
     new_user = False
-    amuletos = await fetch_amuletos(ctx.bot.mysql, ctx.author.id)
+    amuletos = await ctx.bot.db.fetch_amuletos(ctx.author.id)
 
     if amuletos == None:
         new_user = True
@@ -106,13 +75,13 @@ async def pray(ctx: lightbulb.Context):
         # i hate timezones and dates on god 😩
         # all timezones are saved in utc (spain/madrid timezone is utc+2 -> ZoneInfo('Europe/Madrid'))
 
-        await register_user(ctx.bot.mysql, ctx.author.id, get_utc())
+        await ctx.bot.db.register_user(ctx.author.id, get_utc())
         amuletos = 0
 
-    coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
+    coins = await ctx.bot.db.fetch_coins(ctx.author.id)
 
-    await update_coins(ctx.bot.mysql, ctx.author.id, coins + 1 + amuletos)
-    await update_prays(ctx.bot.mysql, ctx.author.id)
+    await ctx.bot.db.update_coins(ctx.author.id, coins + 1 + amuletos)
+    await ctx.bot.db.update_prays(ctx.author.id)
 
     if new_user:
         await ctx.respond(
@@ -145,7 +114,7 @@ async def pray(ctx: lightbulb.Context):
         f", {random.choice(['sigue asi', 'dale', 'durisimo', 'bendecido'])} {random.choice(['🤑', '😎🙏', '😇'])}"
     )
 
-    await handle_xp(ctx, ctx.author.id)
+    await ctx.bot.db.handle_xp(ctx, ctx.author.id)
 
 
 @plugin.command
@@ -161,7 +130,7 @@ async def pray(ctx: lightbulb.Context):
 async def pinfo(ctx: lightbulb.Context):
     member = ctx.options.miembro or ctx.member
 
-    data = await fetch_prayinfo(ctx.bot.mysql, member.id)
+    data = await ctx.bot.db.fetch_prayinfo(member.id)
 
     if not data[0] or not data[1]:
         # user isnt in the db
@@ -171,7 +140,7 @@ async def pinfo(ctx: lightbulb.Context):
             delete_after=10)
         return
 
-    lvl, _ = await fetch_level(ctx.bot.mysql, member.id)
+    lvl, _ = await ctx.bot.db.fetch_level(member.id)
 
     # user_info // economy_info
     ui, ei = data
@@ -220,7 +189,7 @@ async def give(ctx: lightbulb.Context):
                           delete_after=10)
         return
 
-    author_coins = await fetch_coins(ctx.bot.mysql, ctx.member.id)
+    author_coins = await ctx.bot.db.fetch_coins(ctx.member.id)
 
     if ctx.options.cantidad == "all":
         amount = author_coins
@@ -249,7 +218,7 @@ async def give(ctx: lightbulb.Context):
 
         return
 
-    other_coins = await fetch_coins(ctx.bot.mysql, ctx.options.miembro.id)
+    other_coins = await ctx.bot.db.fetch_coins(ctx.options.miembro.id)
 
     if other_coins == None:
         await ctx.respond(
@@ -263,9 +232,8 @@ async def give(ctx: lightbulb.Context):
     # await update_coins(ctx.bot.mysql, ctx.options.member.id,
     #                    other_coins + ctx.options.amount)
 
-    await make_transaction(ctx.bot.mysql, ctx.member.id,
-                           ctx.options.miembro.id, author_coins, other_coins,
-                           amount)
+    await ctx.bot.db.make_transaction(ctx.member.id, ctx.options.miembro.id,
+                                      author_coins, other_coins, amount)
 
     # actually yucky formatting
     await ctx.respond(
@@ -292,9 +260,9 @@ async def give(ctx: lightbulb.Context):
 @lightbulb.command("religion", "Cambias el nombre a tu religión")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def religion(ctx: lightbulb.Context):
-    religion = await fetch_religion(ctx.bot.mysql, ctx.member.id)
+    religion = await ctx.bot.db.fetch_religion(ctx.member.id)
 
-    if not await validate_user(ctx.bot.mysql, ctx.author.id):
+    if not await ctx.bot.db.validate_user(ctx.author.id):
         await ctx.respond(
             "si quieres ponerle un nombre a tu religión, reza primero anda",
             delete_after=10)
@@ -312,7 +280,7 @@ async def religion(ctx: lightbulb.Context):
 
     name = ctx.options.nombre[:25]
 
-    await update_religion(ctx.bot.mysql, ctx.member.id, name)
+    await ctx.bot.db.update_religion(ctx.member.id, name)
 
     if len(ctx.options.nombre) > 25:
         await ctx.respond(
@@ -441,7 +409,7 @@ async def ranks(ctx: lightbulb.Context):
 async def level(ctx: lightbulb.Context):
     member = ctx.options.miembro or ctx.member
 
-    if not await validate_user(ctx.bot.mysql, member.id):
+    if not await ctx.bot.db.validate_user(member.id):
         await ctx.respond(
             f"loco, por qué quieres ver el nivel de {member.mention} si se ve que no ha rezado nunca?"
             if ctx.options.miembro else
@@ -451,14 +419,15 @@ async def level(ctx: lightbulb.Context):
         return
 
     # cambiar el output y tal -> usar una foto a lo mejor con las barras
-    lvl, xp = await fetch_level(ctx.bot.mysql, member.id)
-    max = get_max_xp(lvl)
+    lvl, xp = await ctx.bot.db.fetch_level(member.id)
+    max = ctx.bot.db.get_max_xp(lvl)
 
     # uncomment this out when you implement top.gg
     view = miru.View(timeout=0)
     view.add_item(
         miru.Button(style=hikari.ButtonStyle.LINK,
-                    label="Vota y consigue 15% más de xp",
+                    label="vota y consigue 20% más de xp " +
+                    random.choice(["‼️", "👍", "🦍", ""]),
                     url="https://top.gg/bot/693163993841270876/vote"))
 
     await ctx.respond(
@@ -466,7 +435,7 @@ async def level(ctx: lightbulb.Context):
         if ctx.options.miembro else
         f"eres nivel **{lvl}**\n**{xp}/{max}** necesitas **{max - xp}** de xp para subir de nivel",
         user_mentions=False,
-        components=view.build())
+        components=view)
 
 
 @plugin.command
@@ -474,15 +443,15 @@ async def level(ctx: lightbulb.Context):
 @lightbulb.command("shop", "Te muestra la tienda", aliases=["tienda"])
 @lightbulb.implements(lightbulb.SlashCommand)
 async def shop(ctx: lightbulb.Context):
-    if not await validate_user(ctx.bot.mysql, ctx.author.id):
+    if not await ctx.bot.db.validate_user(ctx.author.id):
         await ctx.respond(
             "si quieres ver la tienda y los precios, reza primero anda",
             delete_after=10)
         return
 
-    lvl = await fetch_level_only(ctx.bot.mysql, ctx.member.id)
-    shop_info = await fetch_shop(ctx.bot.mysql)
-    user_shop = await fetch_user_shop(ctx.bot.mysql, ctx.author.id)
+    lvl = await ctx.bot.db.fetch_level_only(ctx.member.id)
+    shop_info = await ctx.bot.db.fetch_shop()
+    user_shop = await ctx.bot.db.fetch_user_shop(ctx.author.id)
 
     desc = f"**Abuela** -> **{get_price(user_shop[1] + 1, 'abuelas'):,}** <:praycoin:758747635909132387>\nConsigues una moneda por hora\n`hay {shop_info[0]:,} abuelas totales creyendo en diferentes religiones`\n**Iglesia** -> **{get_price(user_shop[2] + 1, 'iglesias'):,}** <:praycoin:758747635909132387>\nTodas las abuelas generan una moneda más por hora\n`se han construido {shop_info[1]:,} iglesias en total`\n**Amuleto religioso** -> **{get_price(user_shop[3] + 1, 'amuletos'):,}** <:praycoin:758747635909132387>\nConsigues una moneda más al rezar y se reduce el tiempo de espera por 5s\n`solo se pueden tener 15 por persona`\n"
 
@@ -510,7 +479,7 @@ async def shop(ctx: lightbulb.Context):
 @lightbulb.command("buy", "Compras el objeto que quieras de la tienda")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def buy(ctx: lightbulb.Context):
-    if not await validate_user(ctx.bot.mysql, ctx.author.id):
+    if not await ctx.bot.db.validate_user(ctx.author.id):
         await ctx.respond(
             "si quieres consumir y comprar algo, reza primero anda",
             delete_after=10)
@@ -522,7 +491,7 @@ async def buy(ctx: lightbulb.Context):
     ]
 
     # checking if they have the level necessary to buy that object
-    lvl = await fetch_level_only(ctx.bot.mysql, ctx.member.id)
+    lvl = await ctx.bot.db.fetch_level_only(ctx.member.id)
 
     if lvl >= 10:
         if lvl >= 15:
@@ -540,12 +509,12 @@ async def buy(ctx: lightbulb.Context):
     # view.add_item(views.SelectAmountButton(disabled=True))
 
     message = await ctx.respond("que es lo que quieres comprar rey?",
-                                components=view.build())
-    view.start(await message.message())
+                                components=view)
+    await view.start(message)
     await view.wait()  # wait for it to end or time out
 
     if view.bought:
-        await handle_xp(ctx, ctx.author.id, view.bonus)
+        await ctx.bot.db.handle_xp(ctx, ctx.author.id, view.bonus)
 
 
 @plugin.command
@@ -553,12 +522,12 @@ async def buy(ctx: lightbulb.Context):
 @lightbulb.command("daily", "Reclama recompensas diarias")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def daily(ctx: lightbulb.Context):
-    if not await validate_user(ctx.bot.mysql, ctx.author.id):
+    if not await ctx.bot.db.validate_user(ctx.author.id):
         await ctx.respond("si quieres hacer este comando, reza primero anda",
                           delete_after=10)
         return
 
-    timeout = await get_timeout(ctx.bot.mysql, ctx.author.id)
+    timeout = await ctx.bot.db.get_timeout(ctx.author.id)
 
     if timeout != 0:
         await ctx.respond(
@@ -566,24 +535,48 @@ async def daily(ctx: lightbulb.Context):
         )
         return
 
-    # if random.randint(0, 2) == 0:
-    #     item = random.choice([1, 1, 1, 1, 2, 2, 2, 3, 4, 4])
-    #     name, description = get_item_info(ctx.bot.mysql, item)
+    # if True:
+    if random.randint(0, 3) == 0:
+        # tier 1 -> 50% normal
+        # tier 2 -> 20% duro
+        # tier 3 -> 15% epico
+        # tier 4 -> 10% legendario
+        # tier 5 -> 5% GALACTICO
+        # tier 0 -> 0% (patreon shit etc)
+        items = []
+        i = random.randint(0, 99)
 
-    #     i = fetch_user_item(ctx.bot.mysql, item, ctx.author.id)
-    #     if i == None:
-    #         await store_item(ctx.bot.mysql, ctx.author.id, item)
-    #     else:
-    #         await update_items_add(ctx.bot.mysql, ctx.author.id, item)
+        tier = 5
 
-    #     await ctx.respond(
-    #         f"nuevo día ehh?, has conseguido un item\n**{name}** {get_emoji(item)}: {description}"
-    #     )
-    #     return
+        if i < 50:
+            tier = 1
+        elif 50 <= i and i < 70:
+            tier = 2
+        elif 70 <= i and i < 85:
+            tier = 3
+        elif 85 <= i and i < 95:
+            tier = 4
+
+        items = await ctx.bot.db.fetch_item_from_tier(tier)
+
+        # i = fetch_user_item(ctx.bot.mysql, item, ctx.author.id)
+        # if i == None:
+        #     await store_item(ctx.bot.mysql, ctx.author.id, item)
+        # else:
+        #     await update_items_add(ctx.bot.mysql, ctx.author.id, item)
+
+        item = random.choice(items)
+
+        # TODO: cambiar el mensaje dependiendo del TIER !!
+
+        await ctx.respond(
+            f"nuevo día ehh? has conseguido un item\n{item[1]['emoji']} **{item[1]['name']}**: {item[1]['description']}"
+        )
+        return
 
     # gracias marc 🙏
 
-    ei = await fetch_user_shop(ctx.bot.mysql, ctx.author.id)
+    ei = await ctx.bot.db.fetch_user_shop(ctx.author.id)
     pph = ei[1] * (ei[2] + 1) + ei[4] * 10 * (ei[5] + 1)
 
     # para que la gente del principio consiga monedas
@@ -592,32 +585,72 @@ async def daily(ctx: lightbulb.Context):
     else:
         coins = random.randint(pph, pph * 12)
     # El maximo de prays que se podrán conseguir serán pues worth x horas y el minimo 1 hora, asi sirve de algo el daily cuando subes un poco de nivel
-    await update_coins_add(ctx.bot.mysql, ctx.author.id, coins)
+    await ctx.bot.db.update_coins_add(ctx.author.id, coins)
 
     await ctx.respond(
-        f"nuevo día ehh?, has conseguido **{coins}** <:praycoin:758747635909132387>\na ver si mañana consigues un item"
+        f"nuevo día ehh? has conseguido **{coins}** <:praycoin:758747635909132387>\na ver si mañana consigues un item"
     )
 
 
-# yes yes i gotta do this right, short quick implementation, gotta change it soon
-# @plugin.command
-# @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
-# @lightbulb.command("use", "Usa un item que tengas")
-# @lightbulb.implements(lightbulb.SlashCommand)
-# async def use(ctx: lightbulb.Context):
-#     items = await fetch_user_items(ctx.bot.mysql, ctx.author.id)
+@plugin.command
+@lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.command("use", "Usa un item que tengas")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def use(ctx: lightbulb.Context):
+    user_items = await ctx.bot.db.fetch_user_items(ctx.author.id)
 
-#     if items == None:
-#         await ctx.respond("no tienes ningún item")
+    ids = tuple(i[0] for i in user_items)
+    user_items = {i[0]: i[1] for i in user_items}
 
-# @plugin.command
-# @lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
-# @lightbulb.command("items", "Muestra las ids de los items")
-# @lightbulb.implements(lightbulb.SlashCommand)
+    if not user_items:
+        await ctx.respond("no tienes ningún item")
+        return
 
-# async def items(ctx: lightbulb.Context):
-#     await ctx.respond(
-#         "1: cartera\n2: abuela de bolsillo\n3:iglesia de bolsillo\n4:campana")
+    items = {
+        i[0]: [i[1], i[2], i[3], user_items[i[0]]]
+        for i in await ctx.bot.db.fetch_item_info(ids)
+    }
+
+    # {id: [name, desc, emoji, usos...], ...}
+    view = views.UseItemView(timeout=60, items=items, author_id=ctx.author.id)
+
+    message = await ctx.respond(
+        f"tienes **{len(user_items)}** items\ncual de ellos quieres usar?",
+        components=view)
+
+    await view.start(message)
+
+
+@plugin.command
+@lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.command("misiones", "Mira las misiones que tienes")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def misiones(ctx: lightbulb.Context):
+    lvl = await ctx.bot.db.fetch_level_only(ctx.author.id)
+
+    if not lvl or lvl < 5:
+        # no tiene misiones todavia
+        await ctx.respond(
+            "cuando subas de nivel conseguiras más misiones:\n- [vota al bot](<https://top.gg/bot/693163993841270876/vote>) | x1 item"
+        )
+
+        return
+
+    user_missions = await ctx.bot.db.fetch_user_missions(ctx.author.id)
+
+    mission_info = await ctx.bot.db.fetch_mission_info(
+        tuple([i[0] for i in user_missions]))
+
+    # pablo m3 m4 referencia !!! ..__.:.!!!
+    comp = [
+        f"- {mission_info[m[0]]} **{m[3]}/{m[4]} ({round(m[3] * 100/m[4])}%)**, se resetea <t:{get_timestamp(m[1])}:R> | {m[2]:,} <:praycoin:758747635909132387>"
+        for m in user_missions
+    ]
+
+    await ctx.respond(
+        "\n".join(comp).replace(",", ".") +
+        "\n\n- [vota al bot](<https://top.gg/bot/693163993841270876/vote>) | x1 item"
+    )
 
 
 @plugin.command
@@ -630,7 +663,7 @@ async def daily(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def gamble(ctx: lightbulb.Context):
     # checking and stuff
-    coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
+    coins = await ctx.bot.db.fetch_coins(ctx.author.id)
 
     if coins == None:
         await ctx.respond("si quieres apostar praycoins, reza primero anda",
@@ -662,7 +695,7 @@ async def gamble(ctx: lightbulb.Context):
     # actual code
 
     if random.randint(0, 4) <= 1:
-        await update_coins(ctx.bot.mysql, ctx.author.id, coins + amount)
+        await ctx.bot.db.update_coins(ctx.author.id, coins + amount)
         embed = BetterEmbed(
             title="Has ganado 🤑",
             description=
@@ -670,7 +703,7 @@ async def gamble(ctx: lightbulb.Context):
             .replace(",", "."),
             color=0x126F3D)
     else:
-        await update_coins(ctx.bot.mysql, ctx.author.id, coins - amount)
+        await ctx.bot.db.update_coins(ctx.author.id, coins - amount)
         embed = BetterEmbed(
             title="Has perdido 😢",
             description=
@@ -693,7 +726,7 @@ async def gamble(ctx: lightbulb.Context):
 async def blackjack(ctx: lightbulb.Context):
 
     # checking and stuff
-    coins = await fetch_coins(ctx.bot.mysql, ctx.author.id)
+    coins = await ctx.bot.db.fetch_coins(ctx.author.id)
 
     if coins == None:
         await ctx.respond("si quieres apostar praycoins, reza primero anda",
@@ -722,7 +755,7 @@ async def blackjack(ctx: lightbulb.Context):
         await ctx.respond("real? 😳", delete_after=10)
         return
 
-    await update_coins_subtract(ctx.bot.mysql, ctx.author.id, amount)
+    await ctx.bot.db.update_coins_subtract(ctx.author.id, amount)
 
     # quitar dinero aqui
 
@@ -755,9 +788,9 @@ async def blackjack(ctx: lightbulb.Context):
             name=f"Tus cartas ({count_value([c for _, c in user_cards])})",
             value="".join([get_card_emoji(*info) for info in user_cards]),
             inline=True),
-                                components=view.build())
+                                components=view)
 
-    view.start(await message.message())
+    await view.start(message)
     await view.wait()
 
     stack = view.stack
@@ -774,7 +807,7 @@ async def blackjack(ctx: lightbulb.Context):
     # !!!!!!!!!!!!!!!! mirar si puedo cambiar count_value de abajo por bot_count y user_count (se podria sin problema pero tengo miedo)
     if bot_count == user_count or (bot_count > 21 and user_count > 21):
 
-        await update_coins_add(ctx.bot.mysql, ctx.author.id, amount)
+        await ctx.bot.db.update_coins_add(ctx.author.id, amount)
 
         await ctx.edit_last_response(embed=BetterEmbed(
             title="Te quedas igual 🗿", color=0x32353B).add_field(
@@ -789,7 +822,7 @@ async def blackjack(ctx: lightbulb.Context):
                                      components=[])
 
     elif (user_count > bot_count and user_count <= 21) or bot_count > 21:
-        await update_coins_add(ctx.bot.mysql, ctx.author.id, amount * 2)
+        await ctx.bot.db.update_coins_add(ctx.author.id, amount * 2)
 
         await ctx.edit_last_response(embed=BetterEmbed(
             title=f"Has ganado {amount} praycoins 🤑".replace(",", "."),
@@ -820,10 +853,24 @@ async def blackjack(ctx: lightbulb.Context):
 
 # 5 minutos (en vez de ocho como en el og xd)
 # el intent:
-# @plugin.command
-# @lightbulb.add_cooldown(length=300, uses=1, bucket=lightbulb.UserBucket)
-# @lightbulb.command("desafio", "Reclama recompensas diarias")
-# @lightbulb.implements(lightbulb.SlashCommand)
+@plugin.command
+@lightbulb.command("test", "s")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def test(ctx: lightbulb.Context):
+    await ctx.bot.db.update_user_items(ctx.author.id, 1, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 2, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 3, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 4, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 5, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 6, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 7, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 8, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 9, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 10, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 11, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 12, "add")
+    await ctx.bot.db.update_user_items(ctx.author.id, 13, "add")
+
 
 # async def desafio(ctx: lightbulb.Context):
 #     lvl = await fetch_level_only(ctx.bot.mysql, ctx.author.id)
@@ -895,11 +942,34 @@ async def hourly_praycoin_update(bot: BruhApp):
             "UPDATE economy SET coins = coins + abuelas * (iglesias + 1) + (10 * guiris) * (donaciones + 1) + (10000 * angeles);"
         )
 
+        if not daily_check.is_running:
+            daily_check.start()
+
         return
 
     await bot.mysql.execute(
         "UPDATE economy SET coins = coins + abuelas * (iglesias + 1) + (10 * guiris) * (donaciones + 1);"
     )
+
+
+@tasks.task(d=1, pass_app=True)
+async def daily_check(bot: BruhApp):
+    # this is used for the mission creation/deletion
+    # and to post stats to the top.gg api
+
+    now = datetime.now()
+    d = datetime(now.year, now.month, now.day)
+
+    await bot.mysql.execute("DELETE FROM user_missions WHERE ends_at <= %s",
+                            (now, ))
+
+    if now.isoweekday() == 1:
+        # chequea si el dia es lunes, porque lunes == 1 por codigo
+        await bot.mysql.execute("CALL gen_missions(%s, %s)",
+                                (d + timedelta(days=7), True))
+
+    await bot.mysql.execute("CALL gen_missions(%s, %s)",
+                            (d + timedelta(days=1), False))
 
 
 def load(bot):

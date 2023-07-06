@@ -137,21 +137,21 @@ async def _eval(ctx: lightbulb.Context):
             f"vaya... ha salido mal\n```prolog\nError {e}```")
 
 
-@plugin.command
-@lightbulb.add_checks(lightbulb.owner_only)
-@lightbulb.command("test", "testing command")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def test(ctx: lightbulb.Context):
-    try:
-        m = await ctx.bot.wait_for(
-            hikari.GuildMessageCreateEvent,
-            timeout=10,
-            predicate=lambda m: m.author_id == ctx.author.id)
-    except asyncio.TimeoutError:
-        await ctx.respond("has tardado mucho, no te llevas nada esta vez 😔")
-        return
+# @plugin.command
+# @lightbulb.add_checks(lightbulb.owner_only)
+# @lightbulb.command("test", "testing command")
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def test(ctx: lightbulb.Context):
+#     try:
+#         m = await ctx.bot.wait_for(
+#             hikari.GuildMessageCreateEvent,
+#             timeout=10,
+#             predicate=lambda m: m.author_id == ctx.author.id)
+#     except asyncio.TimeoutError:
+#         await ctx.respond("has tardado mucho, no te llevas nada esta vez 😔")
+#         return
 
-    await ctx.respond(m.content)
+#     await ctx.respond(m.content)
 
 
 def load(bot):

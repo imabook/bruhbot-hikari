@@ -3,6 +3,10 @@ import aiomysql
 
 
 class Database():
+    """
+    FETCH RETURNS () IF IT DOESNT FIND ANYTHING IN THE DB
+    FETCHONE RETURNS None !
+    """
 
     def __init__(self, pool):
         self.__pool = pool

@@ -1,0 +1,80 @@
+{
+	"1": {
+		"name": "cartera",
+		"description": "cartera de alguien con praycoins dentro",
+		"emoji": "<:cartera:1125208687544373248>",
+		"tier": 1
+	},
+	"2": {
+		"name": "abuela de bolsillo",
+		"description": "al usarla consigues una abuela",
+		"emoji": "<:abuela:1125753243130134629>",
+		"tier": 3
+	},
+	"3": {
+		"name": "iglesia de bolsillo",
+		"description": "al usarlo consigues una iglesia",
+		"emoji": "<:iglesia:1125747447034040361>",
+		"tier": 4
+	},
+	"4": {
+		"name": "campana",
+		"description": "hace que tus abuelas rezen instantaneamente",
+		"emoji": "<:campana:1125430268707225651>",
+		"tier": 1
+	},
+	"5": {
+		"name": "regalo humilde",
+		"description": "al usarlo alguien aleatorio del servidor consigue algo aleatorio (no puede usarse en un servidor con menos de 10 personas)",
+		"emoji": "<:regalo:1125389874044874803>",
+		"tier": 1
+	},
+	"6": {
+		"name": "voto de fe",
+		"description": "gracias por votar a bruhbot",
+		"emoji": "<:voted:1125748821574557749>",
+		"tier": 0
+	},
+	"7": {
+		"name": "reseteo de semana",
+		"description": "te cambia todas las misiones",
+		"emoji": "<:restock:1125756227016728616>",
+		"tier": 1
+	},
+	"8": {
+		"name": "completador",
+		"description": "completa una misión aleatoria activa",
+		"emoji": "<:completador:1125763037664657528>",
+		"tier": 2
+	},
+	"9": {
+		"name": "piedra pana",
+		"description": "una piedra OG que te da **1.000.000** <:praycoin:758747635909132387>",
+		"emoji": "<:piedra6:742688040190738452>",
+		"tier": 5
+	},
+	"10": {
+		"name": "dado",
+		"description": "consigues otro item 👍",
+		"emoji": "<:d6:1125203358400118865>",
+		"tier": 2
+	},
+	"11": {
+		"name": "calendario atrasado",
+		"description": "día nuevo, se quita el cooldown del daily",
+		"emoji": "<:calendario:1125205853381873704>",
+		"tier": 2
+	},
+	"12": {
+		"name": "orbes de xp",
+		"description": "te dan algo de xp",
+		"emoji": "<:xp:1125425839488638976>",
+		"tier": 1
+	},
+	"13": {
+		"name": "caramelo raro",
+		"description": "subes al siguiente nivel",
+		"emoji": "<:caramelo:1125424499463049216>",
+		"tier": 3
+	}
+}

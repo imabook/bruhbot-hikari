@@ -36,7 +36,7 @@ VALUES (%s, %s);
 
 STORE_ITEM = """
 INSERT INTO user_items (user_id, item_id, amount)
-VALUES (%s, %s, 1);
+VALUES (%s, %s, %s);
 """
 # STORE_TRANSACTION = """
 # INSERT INTO transactions (user_1, user_2, amount, time)
@@ -102,17 +102,43 @@ FROM timeouts
 WHERE id = %s;
 """
 
-FETCH_USER_ITEM = """
-SELECT amount
-FROM user_items
-WHERE user_id = %s AND item_id = %s;
-"""
-
 FETCH_USER_ITEMS = """
 SELECT item_id, amount
 FROM user_items
 WHERE user_id = %s;
 """
+
+FETCH_ITEM_AMOUNT = """
+SELECT amount
+FROM user_items
+WHERE user_id = %s AND item_id = %s;
+"""
+
+FETCH_USER_MISSIONS = """
+SELECT um.mission_id, um.ends_at, um.reward, um.amount, um.goal 
+FROM user_missions um
+INNER JOIN missions m ON um.mission_id = m.id 
+WHERE um.user_id = %s AND m.is_7d IS FALSE;
+"""
+
+FETCH_USER_MISSIONS_WEEKLY = """
+SELECT um.mission_id, um.ends_at, um.reward, um.amount, um.goal 
+FROM user_missions um
+INNER JOIN missions m ON um.mission_id = m.id 
+WHERE um.user_id = %s AND m.is_7d IS TRUE;
+"""
+
+FETCH_MISSION_INFO = """
+SELECT id, description
+FROM missions
+WHERE id IN %s;
+"""
+
+# FETCH_ITEM_INFO = """
+# SELECT id, name, description, emoji
+# FROM items
+# WHERE id = %s;
+# """
 
 # UPDATES
 UPDATE_COINS = """
@@ -183,14 +209,13 @@ SET executed = %s
 WHERE id = %s;
 """
 
-UPDATE_ITEMS_ADD = """
-UDPATE user_items
-SET amount = amount + 1
+UPDATE_USER_ITEM = """
+UPDATE user_items
+SET amount = %s
 WHERE user_id = %s AND item_id = %s
 """
 
-UPDATE_ITEMS_SUB = """
-UDPATE user_items
-SET amount = amount - 1
-WHERE user_id = %s AND item_id = %s
+DELETE_USER_ITEM = """
+DELETE FROM user_items
+WHERE user_id = %s AND item_id = %s;
 """

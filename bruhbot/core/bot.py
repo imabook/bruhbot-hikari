@@ -1,11 +1,21 @@
 import lightbulb
 import hikari
 
-import aiohttp
+import asyncio
 import time
 
 from utils.database import Database
 from core.context import BetterContext
+
+from aiohttp import web, ClientSession
+from cache import AsyncTTL
+
+import os
+from dotenv import load_dotenv
+import threading
+import aiomysql
+
+load_dotenv()
 
 
 class BruhApp(lightbulb.BotApp):
@@ -16,22 +26,16 @@ class BruhApp(lightbulb.BotApp):
         self.mysql: Database
         self.loaded = time.time()
 
-    @staticmethod
-    async def get_token() -> str:
-        # rewrite this with @property and gen the token yourself dont use a website thats some pussy type shit
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
-                ssl=False)) as session:
-            async with session.get("https://some-random-api.ml/bottoken") as r:
-                return (await r.json())["token"]
+    @AsyncTTL(time_to_live=300, maxsize=5120)
+    async def has_user_voted(self, user_id) -> bool:
+        """returns true if the user has voted, it has a 5 minute cache so it might not be 100% accurate but its fine"""
 
-    # async def get_prefix_context(self,
-    #                              event: hikari.MessageCreateEvent,
-    #                              cls=None):
-    #     if not cls:
-    #         ctx = await super().get_prefix_context(event=event,
-    #                                                cls=BetterContext)
-    #     else:
-    #         ctx = await super().get_prefix_context(event=event,
-    #                                                cls=lightbulb.PrefixContext)
+        headers = {"Authorization": os.environ["DBL_TOKEN"]}
+        async with ClientSession(headers=headers) as session:
+            async with session.get(
+                    f"https://top.gg/api/bots/693163993841270876/check?userId={user_id}"
+            ) as r:
 
-    #     return ctx
+                response = await r.json()
+
+                return response["voted"] == 1

@@ -1,3 +1,5 @@
+import datetime
+import typing as t
 import hikari
 import miru
 
@@ -9,6 +11,8 @@ from database.db_handler import *
 
 from utils.blackjack import *
 from core.embed import BetterEmbed
+
+from utils.items import use_item
 
 # really gotta rewrite this, wrote it yesterday and im already regretting it
 def get_price(i: int, type: str) -> int:
@@ -70,7 +74,7 @@ class BuyView(miru.View):
 
 
 # OMG OMG OMG instead of passing everything over to the next button i couldve saved everything in the view and get it from there 🗿
-class SelectObjectButton(miru.Select):
+class SelectObjectButton(miru.TextSelect):
 
     def __init__(self, options=[], *args, **kwargs) -> None:
         options = [miru.SelectOption(label=o.capitalize()) for o in options]
@@ -126,7 +130,7 @@ class SelectObjectButton(miru.Select):
         if amount == 1:
             ctx.view.add_item(YesButton(object=object, count=object_count, amount=amount, price=price_map[amount], item=self.values[0].lower(), row=2))
             
-            await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{amount} {self.values[0].lower()}** por **{price_map[amount]:,}** <:praycoin:758747635909132387>\nte quedarán **{(coins - price_map[amount]):,}** <:praycoin:758747635909132387> vale?".replace(",", "."), components=self.view.build())
+            await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{amount} {self.values[0].lower()}** por **{price_map[amount]:,}** <:praycoin:758747635909132387>\nte quedarán **{(coins - price_map[amount]):,}** <:praycoin:758747635909132387> vale?".replace(",", "."), components=self.view)
             return
 
 
@@ -135,7 +139,7 @@ class SelectObjectButton(miru.Select):
         desc = "\n".join([f"{self.values[0]} x {k} -> {price_map[k]:,} praycoins" for k in price_map]).replace(",", ".")
 
         await ctx.edit_response(f"**{self.values[0].lower()}** ehh?\nen total puedes comprar **{amount} {self.values[0].lower()}** que serían **{price}** <:praycoin:758747635909132387>\n\naquí te dejo otros precios y tal si no quieres comprar el máximo, tienes **{coins}** <:praycoin:758747635909132387>\n>>> ```ml\n{desc}```",
-                                components=ctx.view.build())
+                                components=ctx.view)
 
 
 # put both selections, nothing really fancy
@@ -143,7 +147,7 @@ class SelectObjectButton(miru.Select):
 # maybe in the future dont remove the selectobjectbutton and cache the prices and all of that shit so people cant abuse it
 # ??? ^
 
-class SelectAmountButton(miru.Select):
+class SelectAmountButton(miru.TextSelect):
 
     def __init__(self, map: int, amount: int, count: int, item: str, coins: int, object: str, *args, **kwargs) -> None:
         self.item = item
@@ -168,7 +172,7 @@ class SelectAmountButton(miru.Select):
         ctx.view.children.pop(0)
 
         await ctx.edit_response("vale vale, " + f"estas a punto de comprar **{i} {self.item}** por **{self.map[i]:,}** <:praycoin:758747635909132387>\nte quedarán **{(self.coins - self.map[i]):,}** <:praycoin:758747635909132387> vale?".replace(",", "."),
-                                components=self.view.build())
+                                components=self.view)
 
     # def set_amount(self, amount: int) -> None:
     #     self._placeholder = "elije una cantidad, no?"
@@ -195,14 +199,14 @@ class YesButton(miru.Button):
                          ]), row=row)
 
     async def callback(self, ctx: miru.Context) -> None:
-        coins = await fetch_coins(ctx.app.mysql, ctx.user.id)
+        coins = await ctx.app.db.fetch_coins(ctx.user.id)
 
         if coins - self.price < 0:
             await ctx.edit_response("vaya, parece que ya no tienes el dinero necesario para comprarlo", components=[])
             self.view.stop()
             return
 
-        await buy_object(ctx.app.mysql, ctx.user.id, coins - self.price, self.object, self.amount)
+        await ctx.app.db.buy_object(ctx.user.id, coins - self.price, self.object, self.amount)
 
         await ctx.edit_response(f"perfecto ya tienes **{self.amount} {self.display_item}** 😇 y ahora cuestan **{get_price(self.amount + 1, self.object):,}** <:praycoin:758747635909132387>".replace(",", "."), components=[])
 
@@ -242,10 +246,6 @@ class BlackjackView(miru.View):
 
         super().__init__(*args, **kwargs)
 
-    # async def on_timeout(self) -> None:
-    #     await self.message.edit(
-    #         "loco, eres realmente lento\nsi no querías comprar nada, no haberme hablado 👿",
-    #         components=[])
 
     @miru.button(label=random.choice(
         ["me quedo quedo así", "me planto", "yo confío"]),
@@ -276,10 +276,121 @@ class BlackjackView(miru.View):
             return True
 
         if ctx.user.id not in self.ignore_ids:
-            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "párate‼️\ntú no has hecho el comando", "si quieres apostar dinero tú, haz el comando TÚ", "párate anda, si quieres apostar dinero haz el comando tú"]),
+            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "párate‼️\ntú no has hecho el comando", "si quieres apostar dinero tú, haz el comando TÚ", "párate anda, si quieres apostar dinero haz el comando tú", "😦"]),
                 flags=hikari.MessageFlag.EPHEMERAL)
 
             self.ignore_ids += [ctx.user.id]
         return False
 
+
+class UseItemView(miru.View):
+
+    def __init__(self, author_id, items, *args, **kwargs) -> None:
+    
+        self.author_id = author_id
+        self.ignore_ids = []
+
+        super().__init__(*args, **kwargs)
+
+        self.add_item(SelectItem(items = items, placeholder=random.choice(["pulsa aquí 👿", "elige item", "a ver que tienes"]), options=[miru.SelectOption(label=i[0], emoji=i[2] or "😷") for i in items.values()]))
+
+    async def on_timeout(self) -> None:
+        await self.message.edit(random.choice([
+            "bueno que te jodan, tardas mucho 👿", "eres muuuuuuy lento 👿"]),
+            components=[])
+        
+    async def view_check(self, ctx: miru.Context) -> bool:
+        if ctx.user.id == self.author_id:
+            return True
+
+        if ctx.user.id not in self.ignore_ids:
+            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "párate‼️\ntú no has hecho el comando", "si quieres usar un item, haz el comando TÚ", "párate anda, si quieres usar un item haz el comando tú", "😦"]),
+                flags=hikari.MessageFlag.EPHEMERAL)
+
+            self.ignore_ids += [ctx.user.id]
+        return False
+
+#TODO: TENDRIA QUE CREAR UNA CUSTOM CLASS FLOW `PrivateView` QUE TIENE YA LO DEL VIEW CHECK PARA NO TENER QUE PONERLO EN TODOS
+
+class YesNoView(miru.View):
+
+    def __init__(self, author_id, *args, **kwargs) -> None:
+        self.answer = None
+
+        self.author_id = author_id
+        self.ignore_ids = []
+
+
+        super().__init__(*args, **kwargs)
+
+    @miru.button(label=random.choice(["va", "dale", "si", "usalo"]), style=hikari.ButtonStyle.SUCCESS)
+    async def yes_button(self, button: miru.Button, ctx: miru.ViewContext):
+        self.answer = True
+        self.stop()
+
+    @miru.button(label=random.choice(["nah", "no", "mejor no", "que va"]), style=hikari.ButtonStyle.DANGER)
+    async def no_button(self, button: miru.Button, ctx: miru.ViewContext):
+        self.answer = False
+        self.stop()
+
+    async def view_check(self, ctx: miru.Context) -> bool:
+        if ctx.user.id == self.author_id:
+            return True
+
+        if ctx.user.id not in self.ignore_ids:
+            await ctx.respond(random.choice(["quédate quieto 😡, tú no has hecho el comando", "párate‼️\ntú no has hecho el comando", "si quieres usar un item, haz el comando TÚ", "párate anda, si quieres usar un item haz el comando tú", "😦"]),
+                flags=hikari.MessageFlag.EPHEMERAL)
+
+            self.ignore_ids += [ctx.user.id]
+        return False
+
+    async def on_timeout(self) -> None:
+        await self.message.edit(random.choice([
+            "bueno que te jodan, tardas mucho 👿‼️", "eres muuuuuuy lento 👿‼️"]),
+            components=[])
+
+
+class SelectItem(miru.TextSelect):
+
+    def __init__(self, items, *args, **kwargs) -> None:
+        self.items = items
+
+        super().__init__(*args, **kwargs)
+
+    async def callback(self, ctx: miru.Context) -> None:
+        for i in self.items:
+
+            if (self.values[0] == self.items[i][0]):
+                
+                view = YesNoView(timeout=15, author_id=ctx.author.id)
+
+                message = await ctx.edit_response(f"**{self.items[i][2] or '😷'} {self.items[i][0]}**: {self.items[i][1]}\n\ntienes **{self.items[i][3]}**, quieres usar uno?", components=view)
+
+                await view.start(message)
+                await view.wait()
+
+                if view.answer == None:
+                    # timed out
+
+                    break
+                
+                if view.answer:
+                    amount = await ctx.bot.db.fetch_item_amount(ctx.author.id, i) # `i` es la id del item 
+                    
+                    if amount and amount != 0:
+                        await ctx.bot.db.update_user_items(ctx.author.id, i, amount - 1)
+                        await use_item(ctx, i)
+
+                        break
+
+                    await ctx.edit_response(f"parece que ya no tienes el item\nvuelve a intentarlo no sé", components=None)
+
+                    break
+                
+
+                # my guy didnt want to use it
+                await ctx.edit_response(f"pues si no querias usarlo para que lo eliges 👿", components=None)
+                break
+
+        self.view.stop()
 
