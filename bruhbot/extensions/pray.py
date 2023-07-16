@@ -853,24 +853,23 @@ async def blackjack(ctx: lightbulb.Context):
 
 # 5 minutos (en vez de ocho como en el og xd)
 # el intent:
-@plugin.command
-@lightbulb.command("test", "s")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def test(ctx: lightbulb.Context):
-    await ctx.bot.db.update_user_items(ctx.author.id, 1, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 2, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 3, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 4, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 5, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 6, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 7, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 8, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 9, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 10, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 11, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 12, "add")
-    await ctx.bot.db.update_user_items(ctx.author.id, 13, "add")
-
+# @plugin.command
+# @lightbulb.command("test", "s")
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def test(ctx: lightbulb.Context):
+#     await ctx.bot.db.update_user_items(ctx.author.id, 1, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 2, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 3, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 4, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 5, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 6, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 7, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 8, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 9, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 10, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 11, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 12, "add")
+#     await ctx.bot.db.update_user_items(ctx.author.id, 13, "add")
 
 # async def desafio(ctx: lightbulb.Context):
 #     lvl = await fetch_level_only(ctx.bot.mysql, ctx.author.id)

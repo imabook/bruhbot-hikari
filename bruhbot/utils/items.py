@@ -105,14 +105,60 @@ async def use_item(ctx: miru.Context, id: int):
         case 7:
             missions = await ctx.bot.mysql.fetch("SELECT mission_id, ends_at FROM user_missions WHERE user_id = %s ORDER BY ends_at", (ctx.author.id))
 
-            if not missions:
+            if not missions or len(missions) < 3:
                 await ctx.edit_response("no tienes ninguna misión, como quieres que te las resetee?", components=None)
                 await ctx.bot.db.update_user_items(ctx.author.id, 7, "add")
 
                 return
-            ... # ya lo hare xd
+            
+            lvl = await ctx.bot.db.fetch_level_only(ctx.author.id)
+
+            await ctx.bot.mysql.execute("DELETE FROM user_missions WHERE user_id = %s", (ctx.author.id,))
+            await ctx.bot.mysql.execute("""
+INSERT INTO user_missions (user_id, mission_id, ends_at, reward, goal)
+        SELECT 
+            %s, 
+            m.id, 
+            %s, 
+            CEIL((RAND() * (1500 - 850) + 850) * %s/4), 
+            IF(m.is_modular, 
+                CEIL(%s * (RAND() * (m.max_amount - m.min_amount) + m.min_amount)), 
+                CEIL(RAND() * (m.max_amount - m.min_amount) + m.min_amount)
+            )
+        FROM (
+            SELECT id, min_amount, max_amount, is_modular
+            FROM missions
+            WHERE is_7d = false AND id NOT IN (%s, %s)
+            ORDER BY RAND()
+            LIMIT 2
+        ) m;
+""", (ctx.author.id, missions[0][1], lvl, lvl, missions[0][0], missions[1][0]))
+            
+            await ctx.bot.mysql.execute("""
+INSERT INTO user_missions (user_id, mission_id, ends_at, reward, goal)
+        SELECT 
+            %s, 
+            m.id, 
+            %s, 
+            0, 
+            IF(m.is_modular, 
+                CEIL(%s * (RAND() * (m.max_amount - m.min_amount) + m.min_amount)), 
+                CEIL(RAND() * (m.max_amount - m.min_amount) + m.min_amount)
+            )
+        FROM (
+            SELECT id, min_amount, max_amount, is_modular
+            FROM missions
+            WHERE is_7d = true AND id != %s
+            ORDER BY RAND()
+            LIMIT 1
+        ) m;
+""", (ctx.author.id, missions[2][1], lvl, missions[2][0]))
+
+            await ctx.edit_response(random.choice(["no te gustaban las otras o que?", "las otras eran jodidas ehh"]) + "\nbueno da igual ya tienes misiones nuevas", components=None)
+            return
+
         case 8:
-            mission = await ctx.bot.mysql.fetchone("SELECT mission_id, goal FROM user_missions WHERE user_id = %s AND amount != goal ORDER BY RAND();", (ctx.author.id, ))
+            mission = await ctx.bot.mysql.fetchone("SELECT mission_id, goal, reward FROM user_missions WHERE user_id = %s AND amount != goal ORDER BY RAND();", (ctx.author.id, ))
             print(mission)
 
             if not mission:
@@ -124,15 +170,44 @@ async def use_item(ctx: miru.Context, id: int):
             info = await ctx.bot.db.fetch_mission_info((mission[0], ))
             await ctx.bot.mysql.execute("UPDATE user_missions SET amount = goal WHERE user_id = %s AND mission_id = %s", (ctx.author.id, mission[0]))
 
-            await ctx.edit_response(f"he hecho la misión que decía **{info[mission[0]]} {mission[1]} veces** o algo así por ti, " + random.choice(["disfruta", "ahora tienes una menos", "no era tan dificil en verdad"]), components=None)
-            # TODO: que se complete flow de recompensa y todo eso
+            msg = f"\nah y has conseguido "
+            if mission[2] == 0:
+                # el reward es un item            
+                # TODO: cambiar los chances
+                item = random.choice(await ctx.bot.db.fetch_item_from_tiers(
+                (3, 4, 5)))
+
+                await ctx.bot.db.update_user_items(ctx.author.id, item[0], "add")
+                msg += f"**{item[1]['emoji']} {item[1]['name']}**"
+            else:
+                await ctx.bot.db.update_coins_add(ctx.author.id, mission[2])
+
+                msg += f"**{mission[2]}** <:praycoin:758747635909132387>"
+
+            i = await ctx.bot.mysql.fetchone(
+                "SELECT COUNT(mission_id) FROM user_missions WHERE id = %s AND goal = amount",
+                (ctx.author.id, ))
+
+            print(i)
+            if i == 3:
+                # mensaje especial de cuando ya completa todas las misiones
+                item = random.choice(await ctx.bot.db.fetch_item_from_tiers((1, 2)))
+
+                await ctx.bot.db.update_user_items(ctx.author.id, item[0], "add")
+
+                await ctx.edit_response(f"hecho, justo era la ultima misión que te quedaba no?\nporque has conseguido **{item[1]['emoji']} {item[1]['name']}** como recompensa bonus o algo" + msg + "de la misión nomral, claro")
+
+                return
+
+            await ctx.edit_response(f"he hecho la misión que decía **{info[mission[0]]} {mission[1]} veces** o algo así por ti, " + random.choice(["disfruta", "ahora tienes una menos", "no era tan dificil en verdad"]) + msg , components=None)
+
 
         case 9:
             await ctx.bot.db.update_coins_add(ctx.author.id, 1000000)
             await ctx.edit_response("solo los reales se acuerdan de la **piedra pana** 😔\nte ha dado **1.000.000** <:praycoin:758747635909132387> fr 😨‼️", components=None)
             return
         case 10:
-            item = random.choice(await ctx.bot.db.fetch_allish_items())
+            item = random.choice(await ctx.bot.db.fetch_item_from_tiers((1, 2, 3, 4)))
             await ctx.bot.db.update_user_items(ctx.author.id, int(item[0]), "add")
 
             if int(item[0]) == 10:

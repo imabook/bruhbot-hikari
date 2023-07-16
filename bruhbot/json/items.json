@@ -37,7 +37,7 @@
 	},
 	"7": {
 		"name": "reseteo de semana",
-		"description": "te cambia todas las misiones",
+		"description": "te cambia todas las misiones, y te pone otras nuevas",
 		"emoji": "<:restock:1125756227016728616>",
 		"tier": 1
 	},

@@ -140,13 +140,15 @@ class DBHandler:
             # output: [["1", {...}], ...]
             return [[key] + [i] for key, i in items.items() if i["tier"] == tier]
 
-    async def fetch_allish_items(self):
-        # fetches all items except special ones (aka tier 0)
+    async def fetch_item_from_tiers(self, tiers: set[int]):
+        if type(tiers) == int:
+            tiers = (tiers, )
+        # fetches all items except special ones (aka tier 0, 5)
         async with aiofiles.open("./bruhbot/json/items.json", mode="r", encoding="utf8") as f:
             items = json.loads(await f.read())
 
             # output: [["1", {...}], ...]
-            return [[key] + [i] for key, i in items.items() if i["tier"] != 0]
+            return [[key] + [i] for key, i in items.items() if i["tier"] in tiers]
 
     async def fetch_user_missions(self, id: int):
         weekly = await self.pool.fetchone(FETCH_USER_MISSIONS_WEEKLY, (id, ))
