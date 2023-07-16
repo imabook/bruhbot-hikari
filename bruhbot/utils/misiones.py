@@ -59,7 +59,7 @@ async def handle_mission_progression(ctx: lightbulb.Context, id: int,
 
 async def check_all_missions(ctx: lightbulb.Context):
     i = await ctx.bot.mysql.fetchone(
-        "SELECT COUNT(mission_id) FROM user_missions WHERE id = %s AND goal = amount",
+        "SELECT COUNT(mission_id) FROM user_missions WHERE user_id = %s AND goal = amount",
         (ctx.author.id, ))
 
     print(i)

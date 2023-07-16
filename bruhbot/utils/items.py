@@ -185,7 +185,7 @@ INSERT INTO user_missions (user_id, mission_id, ends_at, reward, goal)
                 msg += f"**{mission[2]}** <:praycoin:758747635909132387>"
 
             i = await ctx.bot.mysql.fetchone(
-                "SELECT COUNT(mission_id) FROM user_missions WHERE id = %s AND goal = amount",
+                "SELECT COUNT(mission_id) FROM user_missions WHERE user_id = %s AND goal = amount",
                 (ctx.author.id, ))
 
             print(i)
