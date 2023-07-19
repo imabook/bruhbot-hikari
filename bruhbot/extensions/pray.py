@@ -647,7 +647,7 @@ async def misiones(ctx: lightbulb.Context):
 
     user_missions = await ctx.bot.db.fetch_user_missions(ctx.author.id)
 
-    if not user_missions:
+    if not user_missions[0]:
         # para que no de error si no ha generado las misiones
         await ctx.respond(
             "- [vota al bot](<https://top.gg/bot/693163993841270876/vote>) | x1 item"
