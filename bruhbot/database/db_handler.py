@@ -237,5 +237,5 @@ class DBHandler:
             await self.update_xp(id, new_xp)
 
 
-    def get_max_xp(i: int) -> int:
+    def get_max_xp(self, i: int) -> int:
         return math.ceil(((i + 1)**1.2) * 10)

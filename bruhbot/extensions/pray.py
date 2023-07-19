@@ -19,6 +19,7 @@ from core.embed import BetterEmbed
 from utils import views
 from utils.views import get_price
 from utils.blackjack import *
+from utils.misiones import handle_mission_progression
 
 plugin = lightbulb.Plugin("Economía")
 plugin.add_checks(lightbulb.guild_only)
@@ -115,6 +116,10 @@ async def pray(ctx: lightbulb.Context):
     )
 
     await ctx.bot.db.handle_xp(ctx, ctx.author.id)
+    await handle_mission_progression(ctx, 1, 1)
+    await handle_mission_progression(ctx, 2, 1)
+
+    await handle_mission_progression(ctx, 9, 1 + amuletos)
 
 
 @plugin.command
@@ -246,6 +251,8 @@ async def give(ctx: lightbulb.Context):
                         name=ctx.options.miembro.username,
                         value=f"```py\nPraycoins: {other_coins + amount}\n```",
                         inline=True))
+
+    await handle_mission_progression(ctx, 8, amount)
 
 
 @plugin.command
@@ -591,9 +598,11 @@ async def daily(ctx: lightbulb.Context):
         f"nuevo día ehh? has conseguido **{coins}** <:praycoin:758747635909132387>\na ver si mañana consigues un item"
     )
 
+    await handle_mission_progression(ctx, 9, coins)
+
 
 @plugin.command
-@lightbulb.add_cooldown(length=15, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.add_cooldown(length=10, uses=1, bucket=lightbulb.UserBucket)
 @lightbulb.command("use", "Usa un item que tengas")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def use(ctx: lightbulb.Context):
@@ -642,10 +651,15 @@ async def misiones(ctx: lightbulb.Context):
         tuple([i[0] for i in user_missions]))
 
     # pablo m3 m4 referencia !!! ..__.:.!!!
-    comp = [
-        f"- {mission_info[m[0]]} **{m[3]}/{m[4]} ({round(m[3] * 100/m[4])}%)**, se resetea <t:{get_timestamp(m[1])}:R> | {m[2]:,} <:praycoin:758747635909132387>"
-        for m in user_missions
-    ]
+    # OMG simplemente confia
+    comp = [(
+        f"- {mission_info[m[0]]} **{m[3]}/{m[4]} ({round(m[3] * 100/m[4])}%)**, se resetea <t:{get_timestamp(m[1])}:R> | "
+        + (f"{m[2]:,} <:praycoin:758747635909132387>"
+           if m[2] != 0 else "x1 item")
+    ) if m[3] != m[4] else (
+        f"- ~~{mission_info[m[0]]} **{m[3]}/{m[4]} ({round(m[3] * 100/m[4])}%)**, se resetea <t:{get_timestamp(m[1])}:R> | "
+        + (f"{m[2]:,} <:praycoin:758747635909132387>~~"
+           if m[2] != 0 else "x1 item~~")) for m in user_missions]
 
     await ctx.respond(
         "\n".join(comp).replace(",", ".") +
@@ -694,6 +708,8 @@ async def gamble(ctx: lightbulb.Context):
 
     # actual code
 
+    win = False
+
     if random.randint(0, 4) <= 1:
         await ctx.bot.db.update_coins(ctx.author.id, coins + amount)
         embed = BetterEmbed(
@@ -702,6 +718,8 @@ async def gamble(ctx: lightbulb.Context):
             f"Apostaste **{amount:,}** <:praycoin:758747635909132387> y ahora tienes **{(coins + amount):,}** <:praycoin:758747635909132387>"
             .replace(",", "."),
             color=0x126F3D)
+
+        win = True
     else:
         await ctx.bot.db.update_coins(ctx.author.id, coins - amount)
         embed = BetterEmbed(
@@ -712,6 +730,9 @@ async def gamble(ctx: lightbulb.Context):
             color=0xFF0000)
 
     await ctx.respond(embed=embed)
+
+    if win:
+        await handle_mission_progression(ctx, 9, amount)
 
 
 @plugin.command
@@ -836,6 +857,9 @@ async def blackjack(ctx: lightbulb.Context):
                                        ]),
                                        inline=True),
                                      components=[])
+
+        await handle_mission_progression(ctx, 9, amount)
+
     elif (user_count < bot_count and bot_count <= 21) or user_count > 21:
         await ctx.edit_last_response(embed=BetterEmbed(
             title=f"Has perdido {amount} praycoins 😔".replace(",", "."),
@@ -857,19 +881,33 @@ async def blackjack(ctx: lightbulb.Context):
 # @lightbulb.command("test", "s")
 # @lightbulb.implements(lightbulb.SlashCommand)
 # async def test(ctx: lightbulb.Context):
-#     await ctx.bot.db.update_user_items(ctx.author.id, 1, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 2, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 3, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 4, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 5, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 6, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 7, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 8, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 9, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 10, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 11, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 12, "add")
-#     await ctx.bot.db.update_user_items(ctx.author.id, 13, "add")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+#     await ctx.respond("hola")
+# await asyncio.sleep(1)
+# await ctx.bot.db.update_user_items(ctx.author.id, 1, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 2, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 3, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 4, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 5, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 6, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 7, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 8, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 9, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 10, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 11, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 12, "add")
+# await ctx.bot.db.update_user_items(ctx.author.id, 13, "add")
 
 # async def desafio(ctx: lightbulb.Context):
 #     lvl = await fetch_level_only(ctx.bot.mysql, ctx.author.id)

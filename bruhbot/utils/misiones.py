@@ -6,11 +6,11 @@ import random
 async def handle_mission_progression(ctx: lightbulb.Context, id: int,
                                      progress: int):
     data = await ctx.bot.mysql.fetchone(
-        "SELECT amount, goal, reward FROM user_missions WHERE user_id = %s AND mission_id = %s",
+        "SELECT amount, goal, reward FROM user_missions WHERE user_id = %s AND mission_id = %s AND goal != amount",
         (ctx.author.id, id))
 
     if not data:
-        # no tiene esa mision, asique no hay nada que progresar de ella
+        # no tiene esa mision (O ESTA COMPLETADA), asique no hay nada que progresar de ella
         return
 
     amount, goal, reward = data
@@ -56,13 +56,15 @@ async def handle_mission_progression(ctx: lightbulb.Context, id: int,
 
         await check_all_missions(ctx)
 
+        # +1 in the complete missions missions!
+        await handle_mission_progression(ctx, 6, 1)
+        await handle_mission_progression(ctx, 7, 1)
+
 
 async def check_all_missions(ctx: lightbulb.Context):
     i = await ctx.bot.mysql.fetchone(
         "SELECT COUNT(mission_id) FROM user_missions WHERE user_id = %s AND goal = amount",
         (ctx.author.id, ))
-
-    print(i)
 
     if i == 3:
         item = random.choice(await ctx.bot.db.fetch_item_from_tiers((1, 2)))

@@ -22,6 +22,8 @@ from database.db_handler import DBHandler
 from core.embed import BetterEmbed
 from core.bot import BruhApp
 
+from utils.misiones import handle_mission_progression
+
 load_dotenv()
 
 intents = (Intents.GUILDS | Intents.GUILD_MEMBERS
@@ -37,7 +39,7 @@ intents = (Intents.GUILDS | Intents.GUILD_MEMBERS
 #     return "bruh"
 
 bot = BruhApp(
-    token=os.environ["TEST_TOKEN"],
+    token=os.environ["BRUH_TOKEN"],
     intents=intents,
     # prefix=prefix,
     owner_ids=[424213584659218445, 436521909144911874],
@@ -241,6 +243,15 @@ async def on_member_leave(event: hikari.MemberDeleteEvent):
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent):
     await _handle_error(event.context, event.exception)
+
+
+@bot.listen(lightbulb.CommandCompletionEvent)
+async def on_command_completion(event: lightbulb.CommandCompletionEvent):
+    # this will run once the command ended 👍(and didnt error)
+
+    # +1 in the usa comandos mssions!
+    await handle_mission_progression(event.context, 4, 1)
+    await handle_mission_progression(event.context, 5, 1)
 
 
 async def _handle_error(ctx: lightbulb.Context, error):

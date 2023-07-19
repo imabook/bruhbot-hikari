@@ -13,6 +13,7 @@ from utils.blackjack import *
 from core.embed import BetterEmbed
 
 from utils.items import use_item
+from utils.misiones import handle_mission_progression
 
 # really gotta rewrite this, wrote it yesterday and im already regretting it
 def get_price(i: int, type: str) -> int:
@@ -226,6 +227,9 @@ class YesButton(miru.Button):
                 ctx.view.bonus *= 4
             case "donaciones":
                 ctx.view.bonus *= 5
+
+        await handle_mission_progression(ctx, 10, self.count)
+        await handle_mission_progression(ctx, 11, self.count)
 
         self.view.stop()
 

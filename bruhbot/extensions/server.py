@@ -9,7 +9,7 @@ from aiohttp import web
 
 from core.bot import BruhApp
 
-plugin = lightbulb.Plugin("Libro")
+plugin = lightbulb.Plugin("server")
 plugin.add_checks(lightbulb.guild_only)
 
 load_dotenv()
@@ -39,19 +39,20 @@ async def handle_dbl(r: web.Request):
             await r.app.bot.rest.create_message(
                 await (await
                        r.app.bot.rest.fetch_user(user_id)).fetch_dm_channel(),
-                "se viene update.... ‼️")
+                "muchas gracias por votarme\ncomo eres muy humilde ahora ganas más xp y has conseguido **<:voted:1125748821574557749> voto de fe**"
+            )
 
         except Exception as e:
             print(e)
-    else:
-        try:
-            await r.app.bot.rest.create_message(
-                await (await
-                       r.app.bot.rest.fetch_user(user_id)).fetch_dm_channel(),
-                "se viene update... ‼️")
+    # else:
+    #     try:
+    #         await r.app.bot.rest.create_message(
+    #             await (await
+    #                    r.app.bot.rest.fetch_user(user_id)).fetch_dm_channel(),
+    #             "se viene update... ‼️")
 
-        except Exception as e:
-            print(e)
+    #     except Exception as e:
+    #         print(e)
 
     return web.StreamResponse(status=200)
 
