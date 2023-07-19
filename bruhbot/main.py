@@ -104,7 +104,8 @@ async def reload(ctx: lightbulb.Context):
     try:
         [
             bot.reload_extensions(f"extensions.{i[:-3]}")
-            for i in os.listdir("./bruhbot/extensions/") if i.endswith(".py")
+            for i in os.listdir("./bruhbot/extensions/")
+            if i.endswith(".py") and not i.startswith("server")
         ]
         await ctx.respond("hecho rey <:tula:748526797913849956>")
     except Exception as e:
