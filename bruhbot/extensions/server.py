@@ -26,7 +26,9 @@ async def handle_dbl(r: web.Request):
         print("unauth request !!")
         return web.StreamResponse(status=200)
 
-    user_id = (await r.json())["user"]
+    user_id = int((await r.json())["user"])
+
+    print(f"{user_id} is voting !!!")
 
     # para ver si ha rezado almenos una vez
     if await r.app.bot.db.validate_user(user_id):
@@ -44,7 +46,8 @@ async def handle_dbl(r: web.Request):
 
         except Exception as e:
             print(e)
-    # else:
+    else:
+        print("WTF")
     #     try:
     #         await r.app.bot.rest.create_message(
     #             await (await

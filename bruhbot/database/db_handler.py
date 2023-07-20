@@ -152,6 +152,10 @@ class DBHandler:
 
     async def fetch_user_missions(self, id: int):
         weekly = await self.pool.fetchone(FETCH_USER_MISSIONS_WEEKLY, (id, ))
+        
+        if not weekly:
+            return list(await self.pool.fetch(FETCH_USER_MISSIONS, (id, )))
+
         return [weekly] + list(await self.pool.fetch(FETCH_USER_MISSIONS, (id, )))
 
     async def fetch_mission_info(self, ids: set[int]):

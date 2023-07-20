@@ -647,14 +647,6 @@ async def misiones(ctx: lightbulb.Context):
 
     user_missions = await ctx.bot.db.fetch_user_missions(ctx.author.id)
 
-    if not user_missions[0]:
-        # para que no de error si no ha generado las misiones
-        await ctx.respond(
-            "- [vota al bot](<https://top.gg/bot/693163993841270876/vote>) | x1 item"
-        )
-
-        return
-
     mission_info = await ctx.bot.db.fetch_mission_info(
         tuple([i[0] for i in user_missions]))
 
@@ -1001,6 +993,7 @@ async def hourly_praycoin_update(bot: BruhApp):
 async def daily_check(bot: BruhApp):
     # this is used for the mission creation/deletion
     # and to post stats to the top.gg api
+    print(f"EMPEZANDO")
 
     now = datetime.now()
     d = datetime(now.year, now.month, now.day)
@@ -1015,6 +1008,8 @@ async def daily_check(bot: BruhApp):
 
     await bot.mysql.execute("CALL gen_missions(%s, %s)",
                             (d + timedelta(days=1), False))
+
+    print(f"termino 👍 {datetime.now() - now}")
 
 
 def load(bot):
