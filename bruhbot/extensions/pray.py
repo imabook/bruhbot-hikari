@@ -647,6 +647,12 @@ async def misiones(ctx: lightbulb.Context):
 
     user_missions = await ctx.bot.db.fetch_user_missions(ctx.author.id)
 
+    if not user_missions:
+        await ctx.respond(
+            "- [vota al bot](<https://top.gg/bot/693163993841270876/vote>) | x1 item"
+        )
+        return
+
     mission_info = await ctx.bot.db.fetch_mission_info(
         tuple([i[0] for i in user_missions]))
 

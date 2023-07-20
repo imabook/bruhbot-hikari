@@ -303,7 +303,9 @@ async def _handle_error(ctx: lightbulb.Context, error):
         user_mentions=True)
 
     try:
-        await ctx.respond("oops, parece que algo salió mal 😨‼️")
+        await ctx.respond(
+            "oops, parece que algo salió mal 😨‼️\npara que se pueda arreglar reportalo [aquí](https://www.discord.gg/qB7p97H) porfa <:paincom:794280831920898068>"
+        )
     except:
         ...
 

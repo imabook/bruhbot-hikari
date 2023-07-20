@@ -36,6 +36,12 @@ class BruhApp(lightbulb.BotApp):
                     f"https://top.gg/api/bots/693163993841270876/check?userId={user_id}"
             ) as r:
 
-                response = await r.json()
+                if r.status != 200:
+                    return False
+
+                try:
+                    response = await r.json()
+                except:
+                    return False
 
                 return response["voted"] == 1
