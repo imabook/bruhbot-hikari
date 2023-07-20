@@ -28,7 +28,7 @@ multidict==6.0.2
 mysql-connector==2.2.9
 Pillow==9.0.1
 platformdirs==2.5.2
-pycares==4.1.2
+pycares==4.2.0
 pycparser==2.21
 pylint==2.15.2
 PyMySQL==1.0.2
