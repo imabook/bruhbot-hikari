@@ -574,6 +574,8 @@ async def daily(ctx: lightbulb.Context):
 
         item = random.choice(items)
 
+        await ctx.bot.db.update_user_items(ctx.author.id, item[0], "add")
+
         # TODO: cambiar el mensaje dependiendo del TIER !!
 
         await ctx.respond(

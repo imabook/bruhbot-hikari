@@ -138,7 +138,7 @@ class DBHandler:
             items = json.loads(await f.read())
 
             # output: [["1", {...}], ...]
-            return [[key] + [i] for key, i in items.items() if i["tier"] == tier]
+            return [[int(key)] + [i] for key, i in items.items() if i["tier"] == tier]
 
     async def fetch_item_from_tiers(self, tiers: set[int]):
         if type(tiers) == int:
@@ -148,7 +148,7 @@ class DBHandler:
             items = json.loads(await f.read())
 
             # output: [["1", {...}], ...]
-            return [[key] + [i] for key, i in items.items() if i["tier"] in tiers]
+            return [[int(key)] + [i] for key, i in items.items() if i["tier"] in tiers]
 
     async def fetch_user_missions(self, id: int):
         weekly = await self.pool.fetchone(FETCH_USER_MISSIONS_WEEKLY, (id, ))
