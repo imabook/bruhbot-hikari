@@ -216,7 +216,7 @@ INSERT INTO user_missions (user_id, mission_id, ends_at, reward, goal)
 
             d = datetime.now() + timedelta(days=1)
 
-            await ctx.edit_response(random.choice(["buah que rayada", "ehh perdona perdona", "pues sí, tienes razón", "locurote"]) + f" parece que ya es **{d.day}** de **{MESES[d.month - 1]}**\nya puedes hacer el </daily:1014611874807042138> otra vez", components=None)
+            await ctx.edit_response(random.choice(["buah que rayada", "ehh perdona perdona", "pues sí, tienes razón", "locurote"]) + f" parece que ya es **{d.day}** de **{MESES[d.month - 1]}**\nya puedes hacer el </daily:1131176864807927859> otra vez", components=None)
 
         case 12:
             await ctx.edit_response("has conseguido algo de xp", components=None)
