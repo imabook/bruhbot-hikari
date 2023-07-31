@@ -883,6 +883,66 @@ async def blackjack(ctx: lightbulb.Context):
                                      components=[])
 
 
+@plugin.command
+@lightbulb.add_cooldown(length=20, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.command("items", "Muestra todos los items, su tier y lo que hacen")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def items(ctx: lightbulb.Context):
+    # items = await ctx.bot.db.fetch_item_from_tiers((0, 1, 2, 3, 4, 5))
+
+    # msg = ""
+
+    # for i in items:
+    #     msg += f"{i[1]['emoji']} **{i[1]['name']}:** {i[1]['description']} {i[1]['tier']}\n"
+
+    # await ctx.respond(msg)
+
+    await ctx.respond("""
+## items normales:
+<:cartera:1125208687544373248> **cartera:** cartera de alguien con praycoins dentro
+<:campana:1125430268707225651> **campana:** hace que tus abuelas rezen instantaneamente
+<:regalo:1125389874044874803> **regalo humilde:** al usarlo alguien aleatorio del servidor consigue algo aleatorio (no puede usarse en un servidor con menos de 10 personas)               
+<:restock:1125756227016728616> **reseteo de semana:** te cambia todas las misiones, y te pone otras nuevas
+<:xp:1125425839488638976> **orbes de xp:** te dan algo de xp
+
+## items raros:
+<:completador:1125763037664657528> **completador:** completa una misión aleatoria activa     
+<:d6:1125203358400118865> **dado:** consigues otro item 👍
+<:calendario:1125205853381873704> **calendario atrasado:** día nuevo, se quita el cooldown del daily
+
+## items épicos:
+<:abuela:1125753243130134629> **abuela de bolsillo:** al usarla consigues una abuela
+<:caramelo:1125424499463049216> **caramelo raro:** subes al siguiente nivel
+
+## items legendarios:               
+<:iglesia:1125747447034040361> **iglesia de bolsillo:** al usarlo consigues una iglesia
+
+## items con 0.0000% de CHANCES:
+<:piedra6:742688040190738452> **piedra pana:** una piedra OG que te da **1.000.000** <:praycoin:758747635909132387>
+
+### items especiales:
+<:voted:1125748821574557749> **voto de fe:** item que consigues al [votar](<https://top.gg/bot/693163993841270876/vote>) al bot, gracias por votar a bruhbot
+""")
+
+
+@plugin.command
+@lightbulb.add_cooldown(length=20, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.command(
+    "vote",
+    "Muestra el link para que puedas votar al bot y conseguir recompensas")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def vote(ctx: lightbulb.Context):
+    await ctx.respond(
+        "muchas gracias por votar al bot, aqui tienes el link: <https://top.gg/bot/693163993841270876/vote>\n\nvotar al bot hace que consigas un item especial y un 20% más de xp durante 12h, también "
+        + random.choice([
+            "te combiertes en mejor persona", "salvas a un perrito de morir 🥺",
+            "salvas a un gatito de morir 🥺",
+            "aparece más dinero en tu cuenta bancaria", "creces 5cm por voto",
+            "te vuelves un 75% más feliz", "te conviertes en un tigre real",
+            "ganas un año más de vida"
+        ]))
+
+
 # 5 minutos (en vez de ocho como en el og xd)
 # el intent:
 # @plugin.command
@@ -982,7 +1042,9 @@ async def hourly_praycoin_update(bot: BruhApp):
     # do i really need to have the query in queries.py
     # and the execute in the db_handler? its just one line idk
 
-    if datetime.now().hour == 0:
+    # FOOOOK el server va retrasado dos horas, entonces cuando aqui son las 00 en el server son las 22
+    # (espero que no joda con nada de las horas, me cago en la putisima madre de las zonas horarias)
+    if datetime.now().hour == 22:
         await bot.mysql.execute(
             "UPDATE economy SET coins = coins + abuelas * (iglesias + 1) + (10 * guiris) * (donaciones + 1) + (10000 * angeles);"
         )
