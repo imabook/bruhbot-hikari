@@ -933,7 +933,7 @@ async def items(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def vote(ctx: lightbulb.Context):
     await ctx.respond(
-        "muchas gracias por votar al bot, aqui tienes el link: <https://top.gg/bot/693163993841270876/vote>\n\nvotar al bot hace que consigas un item especial y un 20% más de xp durante 12h, también "
+        "muchas gracias por querer votar al bot, aqui tienes el link: <https://top.gg/bot/693163993841270876/vote>\n\nvotar al bot hace que consigas un item especial y un 20% más de xp durante 12h, también "
         + random.choice([
             "te combiertes en mejor persona", "salvas a un perrito de morir 🥺",
             "salvas a un gatito de morir 🥺",
