@@ -1044,7 +1044,8 @@ async def hourly_praycoin_update(bot: BruhApp):
 
     # FOOOOK el server va retrasado dos horas, entonces cuando aqui son las 00 en el server son las 22
     # (espero que no joda con nada de las horas, me cago en la putisima madre de las zonas horarias)
-    if datetime.now().hour == 22:
+    # nada lo he quitado
+    if datetime.now().hour == 0:
         await bot.mysql.execute(
             "UPDATE economy SET coins = coins + abuelas * (iglesias + 1) + (10 * guiris) * (donaciones + 1) + (10000 * angeles);"
         )
