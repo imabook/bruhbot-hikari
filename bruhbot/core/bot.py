@@ -45,3 +45,12 @@ class BruhApp(lightbulb.BotApp):
                     return False
 
                 return response["voted"] == 1
+
+    async def post_bot_stats(self) -> None:
+        headers = {"Authorization": os.environ["DBL_TOKEN"]}
+        async with ClientSession(headers=headers) as session:
+            await session.post(
+                f"https://top.gg/api/bots/693163993841270876/stats",
+                json={
+                    "server_count": await self.rest.fetch_my_guilds().count()
+                })

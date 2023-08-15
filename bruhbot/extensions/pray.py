@@ -1082,6 +1082,8 @@ async def daily_check(bot: BruhApp):
 
     print(f"termino 👍 {datetime.now() - now}")
 
+    await bot.post_bot_stats()
+
 
 def load(bot):
     bot.add_plugin(plugin)
