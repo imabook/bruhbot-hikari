@@ -40,7 +40,7 @@ async def use_item(ctx: miru.Context, id: int):
             await ctx.edit_response(f"se ha unido una abuela mas a tu religión, ahora tienes **{shop[2]}**", components=None)
 
         case 4:
-            a, i = await ctx.bot.mysql.fetchone("SELECT abuelas, iglesias FROM economy WHERE id = %s", (id,))
+            a, i = await ctx.bot.mysql.fetchone("SELECT abuelas, iglesias FROM economy WHERE id = %s", (ctx.author.id,))
             await ctx.bot.db.update_coins_add(ctx.author.id, a * (i + 1))
 
             await ctx.edit_response(f"todas tus abuelas han rezado y has conseguido **{a * (i + 1)}** <:praycoin:758747635909132387>", components=None)
