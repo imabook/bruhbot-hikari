@@ -49,7 +49,7 @@ async def handle_mission_progression(ctx: lightbulb.Context, id: int,
             msg = f"y ahora tienes **{reward}** <:praycoin:758747635909132387> más, "
 
         await ctx.respond(
-            f"has completado la misión de **{mi[id]} {goal}** veces\n" + msg +
+            f"has completado la misión de **{mi[id]} {goal} veces**\n" + msg +
             random.choice(
                 ["enhorabuena 🙏", "duro duro duro ‼️", "bendecido 🤑"]),
             components=None)

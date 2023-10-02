@@ -386,7 +386,7 @@ async def ranks(ctx: lightbulb.Context):
         [
             embed.add_field(
                 name=f"#{x + 1} - {cached_ids[d[0]]}",
-                value=f"Con {d[1]:,} {value_changes[ctx.options.tipo]}".
+                value=f"Con **{d[1]:,}** {value_changes[ctx.options.tipo]}".
                 replace(",", ".")) for x, d in enumerate(data)
         ]
     else:
